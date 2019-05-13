@@ -3,10 +3,9 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Traversable;
 
 /**
- * @method Traversable|bool[] getIterator
+ * @method \Traversable|bool[] getIterator
  * @method bool|null first
  * @method bool|null last
  */
@@ -19,8 +18,8 @@ final class BoolCollection extends Collection
      */
     public function offsetSet($index, $value): void
     {
-        if (!is_bool($value)) {
-            throw InvalidArgumentException::invalidValue('a boolean', gettype($value));
+        if (!\is_bool($value)) {
+            throw InvalidArgumentException::invalidValue('a boolean', \gettype($value));
         }
 
         parent::offsetSet($index, $value);

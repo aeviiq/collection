@@ -14,13 +14,13 @@ abstract class Collection extends \ArrayObject implements ICollection
 
     public function contains($element): bool
     {
-        return in_array($element, $this->getArrayCopy(), true);
+        return \in_array($element, $this->getArrayCopy(), true);
     }
 
     public function remove($key): void
     {
         $elements = $this->getArrayCopy();
-        if (!isset($elements[$key]) && !array_key_exists($key, $elements)) {
+        if (!isset($elements[$key]) && !\array_key_exists($key, $elements)) {
             return;
         }
 
@@ -30,7 +30,7 @@ abstract class Collection extends \ArrayObject implements ICollection
     public function removeElement($element): void
     {
         $elements = $this->getArrayCopy();
-        $key = array_search($element, $elements, true);
+        $key = \array_search($element, $elements, true);
 
         if (false === $key) {
             return;
@@ -46,7 +46,7 @@ abstract class Collection extends \ArrayObject implements ICollection
 
     public function filter(callable $closure): ICollection
     {
-        return new static(array_filter($this->getArrayCopy(), $closure));
+        return new static(\array_filter($this->getArrayCopy(), $closure));
     }
 
     public function isEmpty(): bool
@@ -62,7 +62,7 @@ abstract class Collection extends \ArrayObject implements ICollection
     public function first()
     {
         $elements = $this->getArrayCopy();
-        $first = reset($elements);
+        $first = \reset($elements);
         if (false === $first) {
             return null;
         }
@@ -73,7 +73,7 @@ abstract class Collection extends \ArrayObject implements ICollection
     public function last()
     {
         $elements = $this->getArrayCopy();
-        $last = end($elements);
+        $last = \end($elements);
         if (false === $last) {
             return null;
         }

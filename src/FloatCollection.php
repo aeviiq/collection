@@ -3,10 +3,9 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Traversable;
 
 /**
- * @method Traversable|float[] getIterator
+ * @method \Traversable|float[] getIterator
  * @method float|null first
  * @method float|null last
  */
@@ -19,8 +18,8 @@ final class FloatCollection extends Collection
      */
     public function offsetSet($index, $value): void
     {
-        if (!is_float($value)) {
-            throw InvalidArgumentException::invalidValue('a float', gettype($value));
+        if (!\is_float($value)) {
+            throw InvalidArgumentException::invalidValue('a float', \gettype($value));
         }
 
         parent::offsetSet($index, $value);

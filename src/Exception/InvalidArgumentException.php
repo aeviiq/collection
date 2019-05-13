@@ -9,6 +9,6 @@ class InvalidArgumentException extends \InvalidArgumentException
         string $givenType,
         string $parameterName = '$value'
     ): InvalidArgumentException {
-        return new static(sprintf('%s must be %s, %s given.', $parameterName, $expectedType, $givenType));
+        return new static(\sprintf('%s must be %s, %s given.', $parameterName, $expectedType, $givenType));
     }
 }

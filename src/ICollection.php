@@ -57,5 +57,8 @@ interface ICollection extends \IteratorAggregate, \ArrayAccess, \Serializable, \
      */
     public function last();
 
+    /**
+     * @return array A copy of the internal array (getArrayCopy())
+     */
     public function toArray(): array;
 }

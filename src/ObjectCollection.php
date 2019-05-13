@@ -3,10 +3,9 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Traversable;
 
 /**
- * @method Traversable|object[] getIterator
+ * @method \Traversable|object[] getIterator
  * @method object|null first
  * @method object|null last
  */
@@ -17,13 +16,13 @@ abstract class ObjectCollection extends Collection
      */
     final public function offsetSet($index, $value): void
     {
-        if (!is_object($value)) {
-            throw InvalidArgumentException::invalidValue('an object', gettype($value));
+        if (!\is_object($value)) {
+            throw InvalidArgumentException::invalidValue('an object', \gettype($value));
         }
 
         $allowedInstance = $this->allowedInstance();
         if (!($value instanceof $allowedInstance)) {
-            throw InvalidArgumentException::invalidValue($allowedInstance, get_class($value));
+            throw InvalidArgumentException::invalidValue($allowedInstance, \get_class($value));
         }
 
         parent::offsetSet($index, $value);

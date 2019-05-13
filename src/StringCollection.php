@@ -3,10 +3,9 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Traversable;
 
 /**
- * @method Traversable|string[] getIterator
+ * @method \Traversable|string[] getIterator
  * @method string|null first
  * @method string|null last
  */
@@ -19,8 +18,8 @@ final class StringCollection extends Collection
      */
     public function offsetSet($index, $value): void
     {
-        if (!is_string($value)) {
-            throw InvalidArgumentException::invalidValue('a string', gettype($value));
+        if (!\is_string($value)) {
+            throw InvalidArgumentException::invalidValue('a string', \gettype($value));
         }
 
         parent::offsetSet($index, $value);
