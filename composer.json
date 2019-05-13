@@ -1,0 +1,28 @@
+{
+  "name": "aeviiq/collection",
+  "type": "library",
+  "description": "PHP Typed collection implementation",
+  "keywords": ["collection"],
+  "homepage": "https://github.com/aeviiq/collection",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Aeviiq Collection contributors",
+      "homepage": "https://github.com/aeviiq/collection/graphs/contributors"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Aeviiq\\Collection\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Aeviiq\\Tests\\Collection\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.2",
+    "ext-json": "*"
+  }
+}
