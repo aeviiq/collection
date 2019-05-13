@@ -9,7 +9,10 @@ abstract class Collection extends \ArrayObject implements ICollection
         int $flags = \ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS,
         string $iteratorClass = \ArrayIterator::class
     ) {
-        parent::__construct($input, $flags, $iteratorClass);
+        parent::__construct([], $flags, $iteratorClass);
+        foreach ($input as $key => $value) {
+            $this->offsetSet($key, $value);
+        }
     }
 
     public function contains($element): bool
