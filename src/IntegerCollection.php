@@ -5,11 +5,11 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @method \Traversable|bool[] getIterator
- * @method bool|null first
- * @method bool|null last
+ * @method \Traversable|int[] getIterator
+ * @method int|null first
+ * @method int|null last
  */
-final class BoolCollection extends Collection
+final class IntegerCollection extends Collection
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ final class BoolCollection extends Collection
      */
     public function offsetSet($index, $value): void
     {
-        if (!\is_bool($value)) {
-            throw InvalidArgumentException::invalidValue('a boolean', \gettype($value));
+        if (!\is_int($value)) {
+            throw InvalidArgumentException::invalidValue('an integer', \gettype($value));
         }
 
         parent::offsetSet($index, $value);

@@ -2,7 +2,7 @@
 
 namespace Aeviiq\Collection;
 
-interface ICollection extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
+interface ICollection extends \IteratorAggregate, \Traversable, \ArrayAccess, \Serializable, \Countable
 {
     /**
      * Checks whether the element is present in the ICollection
@@ -12,18 +12,11 @@ interface ICollection extends \IteratorAggregate, \ArrayAccess, \Serializable, \
     public function contains($element): bool;
 
     /**
-     * Removes an element by it's assigned key.
-     *
-     * @param mixed $key
-     */
-    public function remove($key): void;
-
-    /**
      * Removes an element by it's value.
      *
      * @param mixed $element
      */
-    public function removeElement($element): void;
+    public function remove($element): void;
 
     /**
      * Clears the ICollection.
