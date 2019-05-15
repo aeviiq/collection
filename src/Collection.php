@@ -20,17 +20,7 @@ abstract class Collection extends \ArrayObject implements ICollection
         return \in_array($element, $this->getArrayCopy(), true);
     }
 
-    public function remove($key): void
-    {
-        $elements = $this->getArrayCopy();
-        if (!isset($elements[$key]) && !\array_key_exists($key, $elements)) {
-            return;
-        }
-
-        $this->offsetUnset($key);
-    }
-
-    public function removeElement($element): void
+    public function remove($element): void
     {
         $elements = $this->getArrayCopy();
         $key = \array_search($element, $elements, true);
@@ -54,7 +44,7 @@ abstract class Collection extends \ArrayObject implements ICollection
 
     public function isEmpty(): bool
     {
-        return empty($this->getArrayCopy());
+        return 0 === \count($this);
     }
 
     public function copy(): ICollection
