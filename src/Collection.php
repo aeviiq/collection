@@ -39,7 +39,7 @@ abstract class Collection extends \ArrayObject implements ICollection
 
     public function filter(callable $closure): ICollection
     {
-        return new static(\array_filter($this->getArrayCopy(), $closure));
+        return $this->createCopy(\array_filter($this->getArrayCopy(), $closure));
     }
 
     public function isEmpty(): bool
@@ -49,7 +49,7 @@ abstract class Collection extends \ArrayObject implements ICollection
 
     public function copy(): ICollection
     {
-        return new static($this->getArrayCopy());
+        return $this->createCopy($this->getArrayCopy());
     }
 
     public function first()
@@ -77,5 +77,10 @@ abstract class Collection extends \ArrayObject implements ICollection
     public function toArray(): array
     {
         return $this->getArrayCopy();
+    }
+
+    protected function createCopy(array $input): ICollection
+    {
+        return new static($input, $this->getFlags(), $this->getIteratorClass());
     }
 }
