@@ -1,4 +1,4 @@
-# PHP Typed Collection implementation
+# PHP Typed Collection
 
 ## Why
 To provide an easy way to ensure type safety on collections/arrays and provide
