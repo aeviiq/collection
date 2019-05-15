@@ -41,7 +41,7 @@ final class FooCollection extends ObjectCollection
 
 ## Usage
 ```php
-Useful custom methods for ObjectCollections:
+// Useful custom methods for ObjectCollections:
 $fooCollection = new FooCollection([$foo1, $foo2]);
 $result = $fooCollection->filterReleasedBefore(new DateTime('now'))->filterActives();
 
