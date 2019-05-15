@@ -2,7 +2,7 @@
 
 namespace Aeviiq\Collection;
 
-interface ICollection extends \IteratorAggregate, \Traversable, \ArrayAccess, \Serializable, \Countable
+interface ICollection extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
 {
     /**
      * Checks whether the element is present in the ICollection
