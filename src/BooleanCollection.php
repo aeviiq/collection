@@ -9,7 +9,7 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method bool|null first
  * @method bool|null last
  */
-final class BooleanCollection extends Collection
+final class BooleanCollection extends AbstractCollection
 {
     /**
      * @inheritdoc

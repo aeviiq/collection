@@ -2,85 +2,56 @@
 
 namespace Aeviiq\Collection;
 
-abstract class Collection extends \ArrayObject implements ICollection
+interface Collection extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
 {
-    public function __construct(
-        array $input = [],
-        int $flags = \ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS,
-        string $iteratorClass = \ArrayIterator::class
-    ) {
-        parent::__construct([], $flags, $iteratorClass);
-        foreach ($input as $key => $value) {
-            $this->offsetSet($key, $value);
-        }
-    }
+    /**
+     * Checks whether the element is present in the Collection
+     *
+     * @param mixed $element
+     */
+    public function contains($element): bool;
 
-    public function contains($element): bool
-    {
-        return \in_array($element, $this->getArrayCopy(), true);
-    }
+    /**
+     * Removes an element by it's value.
+     *
+     * @param mixed $element
+     */
+    public function remove($element): void;
 
-    public function remove($element): void
-    {
-        $elements = $this->getArrayCopy();
-        $key = \array_search($element, $elements, true);
+    /**
+     * Clears the Collection.
+     */
+    public function clear(): void;
 
-        if (false === $key) {
-            return;
-        }
+    /**
+     * Filters the current Collection, returning a new Collection with the filtered results.
+     */
+    public function filter(callable $closure): Collection;
 
-        $this->offsetUnset($key);
-    }
+    /**
+     * Whether or not the Collection is empty.
+     */
+    public function isEmpty(): bool;
 
-    public function clear(): void
-    {
-        $this->exchangeArray([]);
-    }
+    /**
+     * Copies the Collection
+     *
+     * @return Collection|static
+     */
+    public function copy(): Collection;
 
-    public function filter(callable $closure): ICollection
-    {
-        return $this->createCopy(\array_filter($this->getArrayCopy(), $closure));
-    }
+    /**
+     * @return mixed
+     */
+    public function first();
 
-    public function isEmpty(): bool
-    {
-        return 0 === \count($this);
-    }
+    /**
+     * @return mixed
+     */
+    public function last();
 
-    public function copy(): ICollection
-    {
-        return $this->createCopy($this->getArrayCopy());
-    }
-
-    public function first()
-    {
-        $elements = $this->getArrayCopy();
-        $first = \reset($elements);
-        if (false === $first) {
-            return null;
-        }
-
-        return $first;
-    }
-
-    public function last()
-    {
-        $elements = $this->getArrayCopy();
-        $last = \end($elements);
-        if (false === $last) {
-            return null;
-        }
-
-        return $last;
-    }
-
-    public function toArray(): array
-    {
-        return $this->getArrayCopy();
-    }
-
-    protected function createCopy(array $input): ICollection
-    {
-        return new static($input, $this->getFlags(), $this->getIteratorClass());
-    }
+    /**
+     * @return array A copy of the internal array (getArrayCopy())
+     */
+    public function toArray(): array;
 }
