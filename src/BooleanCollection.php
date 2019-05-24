@@ -13,15 +13,11 @@ final class BooleanCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
-     *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
      */
-    public function offsetSet($index, $value): void
+    protected function typeCheck($element): void
     {
-        if (!\is_bool($value)) {
-            throw InvalidArgumentException::invalidValue('a boolean', \gettype($value));
+        if (!\is_bool($element)) {
+            throw InvalidArgumentException::expectedBoolean($this, \gettype($element));
         }
-
-        parent::offsetSet($index, $value);
     }
 }

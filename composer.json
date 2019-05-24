@@ -2,7 +2,10 @@
   "name": "aeviiq/collection",
   "type": "library",
   "description": "PHP Typed collection implementation",
-  "keywords": ["collection"],
+  "keywords": [
+    "collection",
+    "typed collections"
+  ],
   "homepage": "https://github.com/aeviiq/collection",
   "license": "MIT",
   "authors": [
@@ -23,6 +26,7 @@
   },
   "require": {
     "php": ">=7.2",
-    "ext-json": "*"
+    "ext-json": "*",
+    "doctrine/collections": "^1.6"
   }
 }

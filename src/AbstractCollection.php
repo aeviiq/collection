@@ -2,60 +2,44 @@
 
 namespace Aeviiq\Collection;
 
-abstract class AbstractCollection extends \ArrayObject implements Collection
+use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Doctrine\Common\Collections\ArrayCollection;
+
+abstract class AbstractCollection extends ArrayCollection
 {
-    public function __construct(
-        array $input = [],
-        int $flags = \ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS,
-        string $iteratorClass = \ArrayIterator::class
-    ) {
-        parent::__construct([], $flags, $iteratorClass);
-        foreach ($input as $key => $value) {
-            $this->offsetSet($key, $value);
+    /**
+     * @inheritdoc
+     */
+    public function __construct(array $elements = [])
+    {
+        parent::__construct();
+        foreach ($elements as $key => $element) {
+            $this->set($key, $element);
         }
     }
 
-    public function contains($element): bool
+    /**
+     * @inheritdoc
+     */
+    public function set($key, $value): void
     {
-        return \in_array($element, $this->getArrayCopy(), true);
+        $this->typeCheck($value);
+        parent::set($key, $value);
     }
 
-    public function remove($element): void
+    /**
+     * @inheritdoc
+     */
+    public function add($element): bool
     {
-        $elements = $this->getArrayCopy();
-        $key = \array_search($element, $elements, true);
+        $this->typeCheck($element);
 
-        if (false === $key) {
-            return;
-        }
-
-        $this->offsetUnset($key);
-    }
-
-    public function clear(): void
-    {
-        $this->exchangeArray([]);
-    }
-
-    public function filter(callable $closure): Collection
-    {
-        return $this->createCopy(\array_filter($this->getArrayCopy(), $closure));
-    }
-
-    public function isEmpty(): bool
-    {
-        return 0 === \count($this);
-    }
-
-    public function copy(): Collection
-    {
-        return $this->createCopy($this->getArrayCopy());
+        return parent::add($element);
     }
 
     public function first()
     {
-        $elements = $this->getArrayCopy();
-        $first = \reset($elements);
+        $first = parent::first();
         if (false === $first) {
             return null;
         }
@@ -65,8 +49,7 @@ abstract class AbstractCollection extends \ArrayObject implements Collection
 
     public function last()
     {
-        $elements = $this->getArrayCopy();
-        $last = \end($elements);
+        $last = parent::last();
         if (false === $last) {
             return null;
         }
@@ -74,13 +57,10 @@ abstract class AbstractCollection extends \ArrayObject implements Collection
         return $last;
     }
 
-    public function toArray(): array
-    {
-        return $this->getArrayCopy();
-    }
-
-    protected function createCopy(array $input): Collection
-    {
-        return new static($input, $this->getFlags(), $this->getIteratorClass());
-    }
+    /**
+     * @param mixed $element
+     *
+     * @throws InvalidArgumentException When the element is not of the expected type.
+     */
+    abstract protected function typeCheck($element): void;
 }

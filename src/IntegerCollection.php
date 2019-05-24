@@ -13,15 +13,11 @@ final class IntegerCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
-     *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
      */
-    public function offsetSet($index, $value): void
+    protected function typeCheck($element): void
     {
-        if (!\is_int($value)) {
-            throw InvalidArgumentException::invalidValue('an integer', \gettype($value));
+        if (!\is_int($element)) {
+            throw InvalidArgumentException::expectedInteger($this, \gettype($element));
         }
-
-        parent::offsetSet($index, $value);
     }
 }

@@ -13,15 +13,11 @@ final class FloatCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
-     *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
      */
-    public function offsetSet($index, $value): void
+    protected function typeCheck($element): void
     {
-        if (!\is_float($value)) {
-            throw InvalidArgumentException::invalidValue('a float', \gettype($value));
+        if (!\is_float($element)) {
+            throw InvalidArgumentException::expectedFloat($this, \gettype($element));
         }
-
-        parent::offsetSet($index, $value);
     }
 }

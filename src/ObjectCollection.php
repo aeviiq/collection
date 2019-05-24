@@ -12,20 +12,18 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
 abstract class ObjectCollection extends AbstractCollection
 {
     /**
-     * @throws InvalidArgumentException When the given $value is not of the allowed instance.
+     * @inheritdoc
      */
-    final public function offsetSet($index, $value): void
+    protected function typeCheck($element): void
     {
-        if (!\is_object($value)) {
-            throw InvalidArgumentException::invalidValue('an object', \gettype($value));
+        if (!\is_object($element)) {
+            throw InvalidArgumentException::expectedObject($this, \gettype($element));
         }
 
         $allowedInstance = $this->allowedInstance();
-        if (!($value instanceof $allowedInstance)) {
-            throw InvalidArgumentException::invalidValue($allowedInstance, \get_class($value));
+        if (!($element instanceof $allowedInstance)) {
+            throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($element));
         }
-
-        parent::offsetSet($index, $value);
     }
 
     /**

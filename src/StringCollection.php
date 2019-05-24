@@ -13,15 +13,11 @@ final class StringCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
-     *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
      */
-    public function offsetSet($index, $value): void
+    protected function typeCheck($element): void
     {
-        if (!\is_string($value)) {
-            throw InvalidArgumentException::invalidValue('a string', \gettype($value));
+        if (!\is_string($element)) {
+            throw InvalidArgumentException::expectedString($this, \gettype($element));
         }
-
-        parent::offsetSet($index, $value);
     }
 }
