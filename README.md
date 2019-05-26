@@ -12,28 +12,28 @@ composer require aeviiq/collection
 ## Declaration
 ```php
 /**
- * @method \Traversable|Bar[] getIterator
- * @method Bar|null first
- * @method Bar|null last
+ * @method \Traversable|Foo[] getIterator
+ * @method Foo|null first
+ * @method Foo|null last
  */
 final class FooCollection extends ObjectCollection
 {
     protected function allowedInstance(): string
     {
-        return Bar::class;
+        return Foo::class;
     }
     
     public function filterReleasedBefore(\DateTimeInterface $dateTime): FooCollection
     {
-        return $this->filter(static function (Bar $bar) use ($dateTime): bool {
-            return $bar->getReleaseDate() < $dateTime;
+        return $this->filter(static function (Foo $foo) use ($dateTime): bool {
+            return $foo->getReleaseDate() < $dateTime;
         });
     }
 
     public function filterActives(): FooCollection
     {
-        return $this->filter(static function (Bar $bar): bool {
-            return $bar->isActive();
+        return $this->filter(static function (Foo $foo): bool {
+            return $foo->isActive();
         });
     }
 }

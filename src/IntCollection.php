@@ -9,7 +9,7 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method int|null first
  * @method int|null last
  */
-final class IntegerCollection extends AbstractCollection
+final class IntCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
@@ -17,7 +17,7 @@ final class IntegerCollection extends AbstractCollection
     protected function typeCheck($element): void
     {
         if (!\is_int($element)) {
-            throw InvalidArgumentException::expectedInteger($this, \gettype($element));
+            throw InvalidArgumentException::expectedInt($this, \gettype($element));
         }
     }
 }

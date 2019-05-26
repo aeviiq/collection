@@ -4,17 +4,12 @@ namespace Aeviiq\Collection\Exception;
 
 class InvalidArgumentException extends \InvalidArgumentException implements IException
 {
-    public static function expectedBoolean(object $subject, string $givenType): InvalidArgumentException
-    {
-        return static::createExpectedTypeException($subject, $givenType, 'boolean');
-    }
-
     public static function expectedString(object $subject, string $givenType): InvalidArgumentException
     {
         return static::createExpectedTypeException($subject, $givenType, 'string');
     }
 
-    public static function expectedInteger(object $subject, string $givenType): InvalidArgumentException
+    public static function expectedInt(object $subject, string $givenType): InvalidArgumentException
     {
         return static::createExpectedTypeException($subject, $givenType, 'integer');
     }
