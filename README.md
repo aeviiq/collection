@@ -46,9 +46,9 @@ $fooCollection = new FooCollection([$foo1, $foo2]);
 $result = $fooCollection->filterReleasedBefore(new DateTime('now'))->filterActives();
 
 // Basic type collections that are provided
-$integerCollection = new IntegerCollection([1, 2]);
+$intCollection = new IntCollection([1, 2]);
 $integerCollection->append(3);
 
-$integerCollection = new IntegerCollection([1, '2']); // InvalidArgumentException thrown
-$integerCollection->append('3');  // InvalidArgumentException thrown
+$intCollection = new IntCollection([1, '2']); // InvalidArgumentException thrown
+$intCollection->append('3');  // InvalidArgumentException thrown
 ```
