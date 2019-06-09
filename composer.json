@@ -26,7 +26,6 @@
     },
     "require": {
         "php": "^7.2",
-        "ext-json": "*",
         "doctrine/collections": "^1.6"
     }
 }

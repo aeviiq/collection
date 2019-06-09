@@ -58,6 +58,14 @@ abstract class Collection extends ArrayCollection implements ICollection
     }
 
     /**
+     * @return mixed[]
+     */
+    public function map(\Closure $func): array
+    {
+        return array_map($func, $this->toArray());
+    }
+
+    /**
      * @param mixed $element
      *
      * @throws InvalidArgumentException When the element is not of the expected type.
