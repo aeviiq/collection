@@ -5,7 +5,7 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @method \Traversable|object[] getIterator
+ * @method \ArrayIterator|object[] getIterator
  * @method object|null first
  * @method object|null last
  */
