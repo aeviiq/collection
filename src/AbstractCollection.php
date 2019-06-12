@@ -3,9 +3,9 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection as BaseArrayCollection;
 
-abstract class Collection extends ArrayCollection implements ICollection
+abstract class AbstractCollection extends BaseArrayCollection implements ICollection
 {
     /**
      * @inheritdoc
