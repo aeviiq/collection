@@ -12,7 +12,7 @@ composer require aeviiq/collection
 ## Declaration
 ```php
 /**
- * @method \Traversable|Foo[] getIterator
+ * @method \ArrayIterator|Foo[] getIterator
  * @method Foo|null first
  * @method Foo|null last
  */
