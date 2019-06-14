@@ -5,11 +5,11 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @method \Traversable|float[] getIterator
+ * @method \ArrayIterator|float[] getIterator
  * @method float|null first
  * @method float|null last
  */
-final class FloatCollection extends Collection
+final class FloatCollection extends AbstractCollection
 {
     /**
      * @inheritdoc
