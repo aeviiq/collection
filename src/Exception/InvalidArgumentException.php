@@ -2,7 +2,7 @@
 
 namespace Aeviiq\Collection\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException implements IException
+class InvalidArgumentException extends \InvalidArgumentException implements Throwable
 {
     public static function expectedString(object $subject, string $givenType): InvalidArgumentException
     {
