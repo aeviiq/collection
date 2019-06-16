@@ -3,6 +3,7 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Exception\LogicException;
 
 /**
  * @method \ArrayIterator|object[] getIterator
@@ -24,6 +25,27 @@ abstract class ObjectCollection extends AbstractCollection
         if (!($element instanceof $allowedInstance)) {
             throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($element));
         }
+    }
+
+    protected function getOneBy(\Closure $closure): object
+    {
+        $result = $this->getOneOrNullBy($closure);
+        if (null === $result) {
+            throw LogicException::oneResultExpected(static::class);
+        }
+
+        return $result;
+    }
+
+    protected function getOneOrNullBy(\Closure $closure): ?object
+    {
+        $filteredResult = $this->filter($closure);
+
+        if ($filteredResult->count() > 1) {
+            throw LogicException::oneOrNullResultExpected(static::class);
+        }
+
+        return $filteredResult->first();
     }
 
     /**
