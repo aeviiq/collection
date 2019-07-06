@@ -3,49 +3,29 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Aeviiq\Collection\Exception\LogicException;
 
 /**
  * @method \ArrayIterator|object[] getIterator
  * @method object|null first
  * @method object|null last
  */
-abstract class ObjectCollection extends AbstractCollection
+abstract class ObjectCollection extends ArrayCollection
 {
     /**
      * @inheritdoc
      */
-    protected function typeCheck($element): void
+    public function offsetSet($index, $value): void
     {
-        if (!\is_object($element)) {
-            throw InvalidArgumentException::expectedObject($this, \gettype($element));
+        if (!\is_object($value)) {
+            throw InvalidArgumentException::expectedObject($this, \gettype($value));
         }
 
         $allowedInstance = $this->allowedInstance();
-        if (!($element instanceof $allowedInstance)) {
-            throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($element));
-        }
-    }
-
-    protected function getOneBy(\Closure $closure): object
-    {
-        $result = $this->getOneOrNullBy($closure);
-        if (null === $result) {
-            throw LogicException::oneResultExpected(static::class);
+        if (!($value instanceof $allowedInstance)) {
+            throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($value));
         }
 
-        return $result;
-    }
-
-    protected function getOneOrNullBy(\Closure $closure): ?object
-    {
-        $filteredResult = $this->filter($closure);
-
-        if ($filteredResult->count() > 1) {
-            throw LogicException::oneOrNullResultExpected(static::class);
-        }
-
-        return $filteredResult->first();
+        parent::offsetSet($index, $value);
     }
 
     /**

@@ -9,15 +9,17 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method float|null first
  * @method float|null last
  */
-final class FloatCollection extends AbstractCollection
+final class FloatCollection extends ArrayCollection
 {
     /**
      * @inheritdoc
      */
-    protected function typeCheck($element): void
+    public function offsetSet($index, $value): void
     {
-        if (!\is_float($element)) {
-            throw InvalidArgumentException::expectedFloat($this, \gettype($element));
+        if (!\is_float($value)) {
+            throw InvalidArgumentException::expectedFloat($this, \gettype($value));
         }
+
+        parent::offsetSet($index, $value);
     }
 }

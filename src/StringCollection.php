@@ -9,15 +9,17 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method string|null first
  * @method string|null last
  */
-final class StringCollection extends AbstractCollection
+final class StringCollection extends ArrayCollection
 {
     /**
      * @inheritdoc
      */
-    protected function typeCheck($element): void
+    public function offsetSet($index, $value): void
     {
-        if (!\is_string($element)) {
-            throw InvalidArgumentException::expectedString($this, \gettype($element));
+        if (!\is_string($value)) {
+            throw InvalidArgumentException::expectedString($this, \gettype($value));
         }
+
+        parent::offsetSet($index, $value);
     }
 }

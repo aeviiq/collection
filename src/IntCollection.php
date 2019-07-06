@@ -9,15 +9,17 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method int|null first
  * @method int|null last
  */
-final class IntCollection extends AbstractCollection
+final class IntCollection extends ArrayCollection
 {
     /**
      * @inheritdoc
      */
-    protected function typeCheck($element): void
+    public function offsetSet($index, $value): void
     {
-        if (!\is_int($element)) {
-            throw InvalidArgumentException::expectedInt($this, \gettype($element));
+        if (!\is_int($value)) {
+            throw InvalidArgumentException::expectedInt($this, \gettype($value));
         }
+
+        parent::offsetSet($index, $value);
     }
 }
