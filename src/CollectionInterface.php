@@ -4,7 +4,7 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
-interface Collection extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
+interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
 {
     /**
      * @inheritdoc

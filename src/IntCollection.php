@@ -9,7 +9,7 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method int|null first
  * @method int|null last
  */
-final class IntCollection extends ArrayCollection
+final class IntCollection extends AbstractCollection
 {
     /**
      * @inheritdoc

@@ -2,7 +2,7 @@
 
 namespace Aeviiq\Collection\Exception;
 
-final class LogicException extends \LogicException implements Throwable
+final class LogicException extends \LogicException implements ExceptionInterface
 {
     public static function oneResultExpected(string $cause): LogicException
     {

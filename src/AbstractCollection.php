@@ -4,7 +4,7 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\LogicException;
 
-abstract class ArrayCollection extends \ArrayObject implements Collection
+abstract class AbstractCollection extends \ArrayObject implements CollectionInterface
 {
     /**
      * @inheritdoc
