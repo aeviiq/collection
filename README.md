@@ -16,7 +16,7 @@ composer require aeviiq/collection
  * @method Foo|null first
  * @method Foo|null last
  */
-final class FooCollection extends ObjectCollection
+final class FooCollection extends AbstractObjectCollection
 {
     protected function allowedInstance(): string
     {
