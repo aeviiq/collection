@@ -7,20 +7,6 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
 interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
 {
     /**
-     * @inheritdoc
-     *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
-     */
-    public function offsetSet($index, $value);
-
-    /**
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function append($value);
-
-    /**
      * @return mixed[]
      */
     public function toArray(): array;
@@ -52,6 +38,30 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
      * @return CollectionInterface|static
      */
     public function filter(\Closure $closure): CollectionInterface;
+
+    /**
+     * @return mixed
+     */
+    public function getOneBy(\Closure $closure);
+
+    /**
+     * @return mixed
+     */
+    public function getOneOrNullBy(\Closure $closure);
+
+    /**
+     * @inheritdoc
+     *
+     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
+     */
+    public function offsetSet($index, $value);
+
+    /**
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function append($value);
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.asort.php
@@ -94,14 +104,4 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
      * @return void
      */
     public function uksort(callable $func);
-
-    /**
-     * @return mixed
-     */
-    public function getOneBy(\Closure $closure);
-
-    /**
-     * @return mixed
-     */
-    public function getOneOrNullBy(\Closure $closure);
 }
