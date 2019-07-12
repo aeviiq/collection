@@ -14,12 +14,10 @@ final class FloatCollection extends AbstractCollection
     /**
      * @inheritdoc
      */
-    public function offsetSet($index, $value): void
+    protected function validateValue($value): void
     {
         if (!\is_float($value)) {
             throw InvalidArgumentException::expectedFloat($this, \gettype($value));
         }
-
-        parent::offsetSet($index, $value);
     }
 }

@@ -14,12 +14,10 @@ final class StringCollection extends AbstractCollection
     /**
      * @inheritdoc
      */
-    public function offsetSet($index, $value): void
+    protected function validateValue($value): void
     {
         if (!\is_string($value)) {
             throw InvalidArgumentException::expectedString($this, \gettype($value));
         }
-
-        parent::offsetSet($index, $value);
     }
 }

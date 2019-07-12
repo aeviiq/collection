@@ -2,6 +2,7 @@
 
 namespace Aeviiq\Collection;
 
+use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
 
 abstract class AbstractCollection extends \ArrayObject implements CollectionInterface
@@ -18,6 +19,18 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         foreach ($elements as $key => $element) {
             $this->offsetSet($key, $element);
         }
+    }
+
+    final public function exchangeArray($input): void
+    {
+        $this->validateArray($input);
+    }
+
+    final public function offsetSet($index, $value): void
+    {
+        $this->validateValue($value);
+
+        parent::offsetSet($index, $value);
     }
 
     public function toArray(): array
@@ -59,9 +72,6 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         return \array_map($closure, $this->toArray());
     }
 
-    /**
-     * @return static|CollectionInterface
-     */
     public function filter(\Closure $closure): CollectionInterface
     {
         return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
@@ -86,6 +96,20 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         }
 
         return $filteredResult->first();
+    }
+
+    /**
+     * @param mixed $element
+     *
+     * @throws InvalidArgumentException Thrown when the given values are not of the expected type.
+     */
+    abstract protected function validateValue($value): void;
+
+    protected function validateArray(array $elements): void
+    {
+        foreach ($elements as $element) {
+            $this->validateValue($element);
+        }
     }
 
     protected function createFrom(array $elements): CollectionInterface

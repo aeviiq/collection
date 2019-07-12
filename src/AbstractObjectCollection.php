@@ -14,7 +14,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
     /**
      * @inheritdoc
      */
-    public function offsetSet($index, $value): void
+    protected function validateValue($value): void
     {
         if (!\is_object($value)) {
             throw InvalidArgumentException::expectedObject($this, \gettype($value));
@@ -24,8 +24,6 @@ abstract class AbstractObjectCollection extends AbstractCollection
         if (!($value instanceof $allowedInstance)) {
             throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($value));
         }
-
-        parent::offsetSet($index, $value);
     }
 
     /**
