@@ -14,7 +14,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
     /**
      * @inheritdoc
      */
-    protected function validateValue($value): void
+    final protected function validateValue($value): void
     {
         if (!\is_object($value)) {
             throw InvalidArgumentException::expectedObject($this, \gettype($value));
