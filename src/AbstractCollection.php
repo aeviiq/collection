@@ -60,9 +60,9 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @return static|Collection
+     * @return static|CollectionInterface
      */
-    public function filter(\Closure $closure): Collection
+    public function filter(\Closure $closure): CollectionInterface
     {
         return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
     }
@@ -88,7 +88,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         return $filteredResult->first();
     }
 
-    protected function createFrom(array $elements): Collection
+    protected function createFrom(array $elements): CollectionInterface
     {
         return new static($elements, $this->getFlags(), $this->getIteratorClass());
     }

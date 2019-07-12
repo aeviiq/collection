@@ -48,7 +48,7 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
      */
     public function map(\Closure $closure): array;
 
-    public function filter(\Closure $closure): Collection;
+    public function filter(\Closure $closure): CollectionInterface;
 
     /**
      * @return mixed
