@@ -48,7 +48,52 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
      */
     public function map(\Closure $closure): array;
 
+    /**
+     * @return CollectionInterface|static
+     */
     public function filter(\Closure $closure): CollectionInterface;
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.asort.php
+     *
+     * @return void
+     */
+    public function asort();
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.ksort.php
+     *
+     * @return void
+     */
+    public function ksort();
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.natcasesort.php
+     *
+     * @return void
+     */
+    public function natcasesort();
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.natsort.php
+     *
+     * @return void
+     */
+    public function natsort();
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.uasort.php
+     *
+     * @return void
+     */
+    public function uasort(callable $func);
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.uksort.php
+     *
+     * @return void
+     */
+    public function uksort(callable $func);
 
     /**
      * @return mixed
