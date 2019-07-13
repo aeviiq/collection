@@ -16,9 +16,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         string $iteratorClass = \ArrayIterator::class
     ) {
         parent::__construct([], $flags, $iteratorClass);
-        foreach ($elements as $key => $element) {
-            $this->offsetSet($key, $element);
-        }
+        $this->exchangeArray($elements);
     }
 
     /**
