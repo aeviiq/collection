@@ -21,11 +21,19 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     final public function exchangeArray($input): void
     {
         $this->validateArray($input);
+
+        parent::exchangeArray($input);
     }
 
+    /**
+     * @inheritdoc
+     */
     final public function offsetSet($index, $value): void
     {
         $this->validateValue($value);
@@ -33,17 +41,46 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         parent::offsetSet($index, $value);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toArray(): array
     {
         return $this->getArrayCopy();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function merge($input): void
+    {
+        if (\is_array($input)) {
+            $this->exchangeArray(\array_merge($this->toArray(), $input));
+
+            return;
+        }
+
+        if ($input instanceof static) {
+            $this->exchangeArray(\array_merge($this->toArray(), $input->toArray()));
+
+            return;
+        }
+
+        throw new InvalidArgumentException(\sprintf('"%s" can only merge with an array or instance of itself.', static::class));
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function first()
     {
         $elements = $this->toArray();
         return \array_shift($elements);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function last()
     {
         $elements = $this->toArray();
@@ -55,6 +92,9 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         return $last;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function remove($element): void
     {
         $key = \array_search($element, $this->toArray(), true);
@@ -105,6 +145,9 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
      */
     abstract protected function validateValue($value): void;
 
+    /**
+     * @param mixed[] $elements
+     */
     protected function validateArray(array $elements): void
     {
         foreach ($elements as $element) {
@@ -112,6 +155,9 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         }
     }
 
+    /**
+     * @param mixed[] $elements
+     */
     protected function createFrom(array $elements): CollectionInterface
     {
         return new static($elements, $this->getFlags(), $this->getIteratorClass());

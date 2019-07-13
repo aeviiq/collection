@@ -40,6 +40,16 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function filter(\Closure $closure): CollectionInterface;
 
     /**
+     * Merges the input with the collection. This can take an array with valid values or
+     * an instance of the collection itself.
+     *
+     * @param mixed[] $input
+     *
+     * @throws InvalidArgumentException When the $input is not of the expected type(s).
+     */
+    public function merge($input): void;
+
+    /**
      * @return mixed
      */
     public function getOneBy(\Closure $closure);
@@ -52,7 +62,7 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     /**
      * @inheritdoc
      *
-     * @throws InvalidArgumentException Thrown when the given $value is not of the expected type.
+     * @throws InvalidArgumentException When the given $value is not of the expected type.
      */
     public function offsetSet($index, $value);
 
