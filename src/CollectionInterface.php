@@ -3,6 +3,7 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Exception\LogicException;
 
 interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Serializable, \Countable
 {
@@ -12,12 +13,12 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function toArray(): array;
 
     /**
-     * @return mixed
+     * @return mixed The first element in the collection or null if there is none.
      */
     public function first();
 
     /**
-     * @return mixed
+     * @return mixed The last element in the collection or null if there is none.
      */
     public function last();
 
@@ -30,11 +31,15 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function remove($element): void;
 
     /**
-     * @return mixed[]
+     * @param \Closure $closure
+     *
+     * @return array
      */
     public function map(\Closure $closure): array;
 
     /**
+     * @param \Closure $closure
+     *
      * @return CollectionInterface
      */
     public function filter(\Closure $closure): CollectionInterface;
@@ -62,68 +67,70 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function contains($element): bool;
 
     /**
-     * @return mixed
+     * @return mixed The one element that was found using the closure.
+     *
+     * @throws LogicException When none or multiple results were found.
      */
     public function getOneBy(\Closure $closure);
 
     /**
-     * @return mixed
+     * @return mixed The one element that was found using the closure or null if none was found.
+     *
+     * @throws LogicException When multiple results were found.
      */
     public function getOneOrNullBy(\Closure $closure);
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws InvalidArgumentException When the given $value is not of the expected type.
      */
     public function offsetSet($index, $value);
 
     /**
-     * @param mixed $value
-     *
-     * @return void
+     * {@inheritdoc}
      */
     public function append($value);
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.asort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function asort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.ksort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function ksort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.natcasesort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function natcasesort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.natsort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function natsort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.uasort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function uasort(callable $func);
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.uksort.php
      *
-     * @return void
+     * {@inheritdoc}
      */
     public function uksort(callable $func);
 }

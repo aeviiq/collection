@@ -12,7 +12,7 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
 abstract class AbstractObjectCollection extends AbstractCollection
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     final protected function validateValue($value): void
     {

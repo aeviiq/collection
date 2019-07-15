@@ -8,7 +8,7 @@ use Aeviiq\Collection\Exception\LogicException;
 abstract class AbstractCollection extends \ArrayObject implements CollectionInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(
         array $elements = [],
@@ -20,7 +20,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     final public function exchangeArray($input): void
     {
@@ -30,7 +30,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     final public function offsetSet($index, $value): void
     {
@@ -40,7 +40,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toArray(): array
     {
@@ -84,7 +84,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function first()
     {
@@ -93,7 +93,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function last()
     {
@@ -107,7 +107,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function remove($element): void
     {
@@ -119,18 +119,24 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @return mixed[]
+     * {@inheritdoc}
      */
     public function map(\Closure $closure): array
     {
         return \array_map($closure, $this->toArray());
     }
 
+    /**
+     * @return static|CollectionInterface
+     */
     public function filter(\Closure $closure): CollectionInterface
     {
         return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getOneBy(\Closure $closure)
     {
         $result = $this->getOneOrNullBy($closure);
@@ -141,6 +147,9 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         return $result;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getOneOrNullBy(\Closure $closure)
     {
         $filteredResult = $this->filter($closure);
@@ -171,6 +180,8 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
 
     /**
      * @param mixed[] $elements
+     *
+     * @return CollectionInterface|static
      */
     protected function createFrom(array $elements): CollectionInterface
     {
