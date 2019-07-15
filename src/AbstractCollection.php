@@ -48,7 +48,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function merge($input): void
     {
@@ -65,6 +65,22 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         }
 
         throw new InvalidArgumentException(\sprintf('"%s" can only merge with an array or instance of itself.', static::class));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEmpty(): bool
+    {
+        return 0 === $this->count();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function contains($element): bool
+    {
+        return \in_array($element, $this->toArray(), true);
     }
 
     /**

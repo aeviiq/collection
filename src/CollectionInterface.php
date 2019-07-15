@@ -35,7 +35,7 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function map(\Closure $closure): array;
 
     /**
-     * @return CollectionInterface|static
+     * @return CollectionInterface
      */
     public function filter(\Closure $closure): CollectionInterface;
 
@@ -48,6 +48,18 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
      * @throws InvalidArgumentException When the $input is not of the expected type(s).
      */
     public function merge($input): void;
+
+    /**
+     * @return bool Whether or not the collection is empty
+     */
+    public function isEmpty(): bool;
+
+    /**
+     * @param mixed $element
+     *
+     * @return bool Whether or not the collection contains the element.
+     */
+    public function contains($element): bool;
 
     /**
      * @return mixed
