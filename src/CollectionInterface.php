@@ -67,6 +67,31 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function contains($element): bool;
 
     /**
+     * Clears the collection
+     *
+     * @return void
+     */
+    public function clear(): void;
+
+    /**
+     * @return int[]|string[]
+     */
+    public function getKeys(): array;
+
+    /**
+     * @return mixed[]
+     */
+    public function getValues(): array;
+
+    /**
+     * @param int      $offset
+     * @param int|null $length
+     *
+     * @return CollectionInterface
+     */
+    public function slice(int $offset, ?int $length = null): CollectionInterface;
+
+    /**
      * @return mixed The one element that was found using the closure.
      *
      * @throws LogicException When none or multiple results were found.

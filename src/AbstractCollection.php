@@ -86,6 +86,38 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     /**
      * {@inheritdoc}
      */
+    public function clear(): void
+    {
+        $this->exchangeArray([]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeys(): array
+    {
+        return \array_keys($this->toArray());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValues(): array
+    {
+        return \array_values($this->toArray());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function slice(int $offset, ?int $length = null): CollectionInterface
+    {
+        return $this->createFrom(\array_slice($this->toArray(), $offset, $length, true));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function first()
     {
         $elements = $this->toArray();
