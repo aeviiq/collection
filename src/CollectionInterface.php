@@ -113,49 +113,69 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function offsetSet($index, $value);
 
     /**
-     * {@inheritdoc}
+     * @see https://www.php.net/manual/en/arrayobject.getflags.php
+     *
+     * @return int The current flags
+     */
+    public function getFlags();
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.setflags.php
+     *
+     * @param int $flags
+     *
+     * @return void
+     */
+    public function setFlags($flags);
+
+    /**
+     * @see https://www.php.net/manual/en/arrayobject.append.php
+     *
+     * @param mixed $value
+     *
+     * @return void
      */
     public function append($value);
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.asort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function asort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.ksort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function ksort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.natcasesort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function natcasesort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.natsort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function natsort();
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.uasort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function uasort(callable $func);
 
     /**
      * @see https://www.php.net/manual/en/arrayobject.uksort.php
      *
-     * {@inheritdoc}
+     * @return void
      */
     public function uksort(callable $func);
 }
