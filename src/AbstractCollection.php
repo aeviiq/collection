@@ -22,7 +22,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     /**
      * {@inheritdoc}
      */
-    final public function exchangeArray($input): void
+    public function exchangeArray($input): void
     {
         $this->validateArray($input);
 
@@ -32,7 +32,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     /**
      * {@inheritdoc}
      */
-    final public function offsetSet($index, $value): void
+    public function offsetSet($index, $value): void
     {
         $this->validateValue($value);
 
