@@ -109,13 +109,13 @@ abstract class AbstractObjectCollection extends AbstractCollection
             return $index;
         }
 
-        $newIndex = 'property_' . $index;
+        $newIndex = '_' . $index;
         if (!$unique) {
             return $newIndex;
         }
 
         while (isset($this->toArray()[$newIndex])) {
-            $newIndex = 'property_' . $index++;
+            $newIndex = '_' . $index++;
         }
 
         return $newIndex;
