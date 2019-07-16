@@ -120,4 +120,15 @@ abstract class AbstractObjectCollection extends AbstractCollection
 
         return $newIndex;
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function createFrom(array $elements): CollectionInterface
+    {
+        $instance = new static($elements, $this->getIteratorClass());
+        $instance->setFlags($this->getFlags());
+
+        return $instance;
+    }
 }
