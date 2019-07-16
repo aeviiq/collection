@@ -31,7 +31,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
     {
         $newInput = [];
         foreach ($input as $index => $value) {
-            $newInput[$this->createValidIndex($index, $value)] = $value;
+            $newInput[$this->createValidIndex($index, true)] = $value;
         }
 
         parent::exchangeArray($newInput);
@@ -42,7 +42,31 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     final public function offsetSet($index, $value): void
     {
-        parent::offsetSet($this->createValidIndex($index, $value), $value);
+        parent::offsetSet($this->createValidIndex($index, true), $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function offsetExists($index): bool
+    {
+        return parent::offsetExists($this->createValidIndex($index));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function offsetUnset($index): void
+    {
+        parent::offsetUnset($this->createValidIndex($index));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function offsetGet($index)
+    {
+        return parent::offsetGet($this->createValidIndex($index));
     }
 
     /**
@@ -71,7 +95,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      *
      * @return string|int The index key which is valid depending on the setFlags.
      */
-    protected function createValidIndex($index, $value)
+    protected function createValidIndex($index, bool $unique = false)
     {
         if (\ArrayObject::ARRAY_AS_PROPS !== ($this->getFlags() & \ArrayObject::ARRAY_AS_PROPS)) {
             return $index;
@@ -81,12 +105,17 @@ abstract class AbstractObjectCollection extends AbstractCollection
             $index = 0;
         }
 
-        $newIndex = $index;
-        if (\is_numeric($index) && \is_object($value)) {
-            $newIndex = 'property_' . $index;
-            while (isset($this->toArray()[$newIndex])) {
-                $newIndex = 'property_' . $index++;
-            }
+        if (!\is_numeric($index)) {
+            return $index;
+        }
+
+        $newIndex = 'property_' . $index;
+        if (!$unique) {
+            return $newIndex;
+        }
+
+        while (isset($this->toArray()[$newIndex])) {
+            $newIndex = 'property_' . $index++;
         }
 
         return $newIndex;
