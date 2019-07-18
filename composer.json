@@ -1,7 +1,7 @@
 {
     "name": "aeviiq/collection",
     "type": "library",
-    "description": "PHP Typed collection implementation",
+    "description": "PHP Typed collections",
     "keywords": [
         "collection",
         "typed collections"
