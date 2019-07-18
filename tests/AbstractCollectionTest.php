@@ -118,6 +118,7 @@ abstract class AbstractCollectionTest extends TestCase
     /** @return mixed */
     private function getValidElement()
     {
+        // TODO: will always return same value, this will give false positives in tests.
         foreach (\array_values($this->typeDataProvider()) as $value) {
             $value = \reset($value);
             
