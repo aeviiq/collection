@@ -7,7 +7,6 @@ namespace Aeviiq\Tests\Collection;
 use Aeviiq\Collection\CollectionInterface;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 abstract class AbstractCollectionTest extends TestCase
 {
@@ -35,10 +34,10 @@ abstract class AbstractCollectionTest extends TestCase
     public function testToArray(): void
     {
         $collection = $this->getCollection();
-    
+        
         $first = $this->getValidElement();
         $last = $this->getValidElement();
-    
+        
         $collection->append($first);
         $collection->append($last);
         
@@ -103,8 +102,11 @@ abstract class AbstractCollectionTest extends TestCase
             'boolean' => [true],
             'null' => [null],
             'array' => [[]],
-            'object' => [new stdClass()],
-            'callable' => [static function () {}],
+            'object' => [new \stdClass()],
+            'callable' => [
+                static function () {
+                },
+            ],
         ];
     }
     
@@ -114,5 +116,16 @@ abstract class AbstractCollectionTest extends TestCase
     abstract protected function getCollection(array $elements = []): CollectionInterface;
     
     /** @return mixed */
-    abstract protected function getValidElement();
+    private function getValidElement()
+    {
+        foreach (\array_values($this->typeDataProvider()) as $value) {
+            $value = \reset($value);
+            
+            if ($this->isValid($value)) {
+                return $value;
+            }
+        }
+        
+        return null;
+    }
 }

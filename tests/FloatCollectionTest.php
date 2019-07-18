@@ -18,9 +18,4 @@ final class FloatCollectionTest extends AbstractCollectionTest
     {
         return new FloatCollection($elements);
     }
-    
-    protected function getValidElement(): float
-    {
-        return 0.0;
-    }
 }

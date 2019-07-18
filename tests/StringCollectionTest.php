@@ -18,9 +18,4 @@ final class StringCollectionTest extends AbstractCollectionTest
     {
         return new StringCollection($elements);
     }
-    
-    protected function getValidElement(): string
-    {
-        return '';
-    }
 }

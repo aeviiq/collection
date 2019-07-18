@@ -18,9 +18,4 @@ final class IntCollectionTest extends AbstractCollectionTest
     {
         return new IntCollection($elements);
     }
-    
-    protected function getValidElement(): int
-    {
-        return 0;
-    }
 }
