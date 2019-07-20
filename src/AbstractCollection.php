@@ -194,7 +194,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * @param mixed $element
+     * @param mixed $value
      *
      * @throws InvalidArgumentException Thrown when the given values are not of the expected type.
      */
