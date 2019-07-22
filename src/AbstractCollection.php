@@ -16,17 +16,19 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         string $iteratorClass = \ArrayIterator::class
     ) {
         parent::__construct([], $flags, $iteratorClass);
-        $this->exchangeArray($elements);
+        foreach ($elements as $key => $element) {
+            $this->offsetSet($key, $element);
+        }
     }
 
     /**
-     * {@inheritdoc}
+     * @return CollectionInterface|static
      */
-    public function exchangeArray($input): void
+    public function exchangeArray($input): CollectionInterface
     {
         $this->validateArray($input);
 
-        parent::exchangeArray($input);
+        return $this->createFrom(parent::exchangeArray($input));
     }
 
     /**

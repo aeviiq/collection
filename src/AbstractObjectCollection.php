@@ -25,16 +25,16 @@ abstract class AbstractObjectCollection extends AbstractCollection
     }
 
     /**
-     * {@inheritdoc}
+     * @return CollectionInterface|static
      */
-    final public function exchangeArray($input): void
+    final public function exchangeArray($input): CollectionInterface
     {
         $newInput = [];
         foreach ($input as $index => $value) {
             $newInput[$this->createValidIndex($index, true)] = $value;
         }
 
-        parent::exchangeArray($newInput);
+        return parent::exchangeArray($newInput);
     }
 
     /**
@@ -122,7 +122,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
     }
     
     /**
-     * {@inheritdoc}
+     * @return CollectionInterface|static
      */
     protected function createFrom(array $elements): CollectionInterface
     {
