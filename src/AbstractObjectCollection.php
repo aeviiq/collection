@@ -1,8 +1,9 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Exception\LogicException;
 
 /**
  * @method \ArrayIterator|object[] getIterator
@@ -69,6 +70,16 @@ abstract class AbstractObjectCollection extends AbstractCollection
         return parent::offsetGet($this->createValidIndex($index));
     }
 
+    final public function natcasesort(): void
+    {
+        throw new LogicException('natcasesort is not supported for objects.');
+    }
+
+    final public function natsort(): void
+    {
+        throw new LogicException('natsort is not supported for objects.');
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -120,7 +131,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
 
         return $newIndex;
     }
-    
+
     /**
      * @return CollectionInterface|static
      */
