@@ -106,6 +106,17 @@ interface CollectionInterface extends \IteratorAggregate, \ArrayAccess, \Seriali
     public function getOneOrNullBy(\Closure $closure);
 
     /**
+     * @see https://www.php.net/manual/en/arrayobject.exchangearray.php
+     *
+     * @param mixed[]
+     *
+     * @return CollectionInterface
+     *
+     * @throws InvalidArgumentException When the given $values are not of the expected type.
+     */
+    public function exchangeArray($values);
+
+    /**
      * {@inheritdoc}
      *
      * @throws InvalidArgumentException When the given $value is not of the expected type.
