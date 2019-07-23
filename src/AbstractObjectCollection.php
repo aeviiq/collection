@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Aeviiq\Collection;
 
@@ -120,7 +120,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
 
         return $newIndex;
     }
-    
+
     /**
      * @return CollectionInterface|static
      */
