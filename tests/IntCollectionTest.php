@@ -10,8 +10,9 @@ final class IntCollectionTest extends TestCase
 {
     public function testInstanceCreation(): void
     {
-        $intCollection = new IntCollection([1, 2, 3]);
-        $this->assertEquals([1, 2, 3], $intCollection->toArray());
+        $expected = [1, 2, 3];
+        $intCollection = new IntCollection($expected);
+        $this->assertSame($expected, $intCollection->toArray());
     }
 
     /**
@@ -32,7 +33,7 @@ final class IntCollectionTest extends TestCase
         $intCollection->append(1);
         $intCollection->append(2);
         $intCollection->append(3);
-        $this->assertEquals([1, 2, 3], $intCollection->toArray());
+        $this->assertSame([1, 2, 3], $intCollection->toArray());
     }
 
     /**
@@ -50,11 +51,12 @@ final class IntCollectionTest extends TestCase
 
     public function testOffsetSet(): void
     {
+        $expected = [0 => 1, 1 => 2, 2 => 3];
         $intCollection = new IntCollection();
-        $intCollection->offsetSet(0, 1);
-        $intCollection->offsetSet(1, 2);
-        $intCollection->offsetSet(2, 3);
-        $this->assertEquals([1, 2, 3], $intCollection->toArray());
+        foreach ($expected as $key => $value) {
+            $intCollection->offsetSet($key, $value);
+        }
+        $this->assertSame($expected, $intCollection->toArray());
     }
 
     /**
@@ -68,6 +70,31 @@ final class IntCollectionTest extends TestCase
         $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
         $intCollection = new IntCollection();
         $intCollection->offsetSet(0, $value);
+    }
+
+    public function testExchangeArray(): void
+    {
+        $expectedPrevious = [1, 2, 3];
+        $expectedCurrent = [4, 5, 6];
+        $intCollection = new IntCollection($expectedPrevious);
+        $previous = $intCollection->exchangeArray([4, 5, 6]);
+        $this->assertSame($expectedPrevious, $previous->toArray());
+        $this->assertNotSame($expectedPrevious, $intCollection->toArray());
+        $this->assertSame($expectedCurrent, $intCollection->toArray());
+        $this->assertNotSame($expectedCurrent, $previous->toArray());
+    }
+
+    /**
+     * @dataProvider invalidDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testExchangeArrayWithInvalidValues($value): void
+    {
+        $intCollection = new IntCollection();
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
+        $intCollection->exchangeArray([$value]);
     }
 
     /**
