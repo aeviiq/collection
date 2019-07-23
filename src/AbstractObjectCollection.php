@@ -3,7 +3,6 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Aeviiq\Collection\Exception\LogicException;
 
 /**
  * @method \ArrayIterator|object[] getIterator
@@ -68,16 +67,6 @@ abstract class AbstractObjectCollection extends AbstractCollection
     final public function offsetGet($index)
     {
         return parent::offsetGet($this->createValidIndex($index));
-    }
-
-    final public function natcasesort(): void
-    {
-        throw new LogicException('natcasesort is not supported for objects.');
-    }
-
-    final public function natsort(): void
-    {
-        throw new LogicException('natsort is not supported for objects.');
     }
 
     /**

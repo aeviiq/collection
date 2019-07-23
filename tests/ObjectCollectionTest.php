@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Aeviiq\Tests\Collection;
 
+use Aeviiq\Collection\AbstractObjectCollection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
-use Aeviiq\Tests\Collection\Mock\MockObject1;
-use Aeviiq\Tests\Collection\Mock\MockObject2;
 use Aeviiq\Tests\Collection\Mock\MockObjectCollection;
 use Aeviiq\Tests\Collection\Mock\MockObjectInterface;
 use PHPUnit\Framework\TestCase;
@@ -24,22 +23,22 @@ final class ObjectCollectionTest extends TestCase
             $this->expectException(InvalidArgumentException::class);
         }
 
-        new MockObjectCollection([$value]);
+        $this->createMockedCollection([$value]);
         $this->addToAssertionCount(1);
 
-        new MockObjectCollection([$value]);
+        $this->createMockedCollection([$value]);
         $this->addToAssertionCount(1);
 
-        (new MockObjectCollection())->append($value);
+        ($this->createMockedCollection())->append($value);
         $this->addToAssertionCount(1);
 
-        (new MockObjectCollection())->offsetSet('', $value);
+        ($this->createMockedCollection())->offsetSet('', $value);
         $this->addToAssertionCount(1);
 
-        (new MockObjectCollection())->exchangeArray([$value]);
+        ($this->createMockedCollection())->exchangeArray([$value]);
         $this->addToAssertionCount(1);
 
-        (new MockObjectCollection())->merge([$value]);
+        ($this->createMockedCollection())->merge([$value]);
         $this->addToAssertionCount(1);
     }
 
@@ -49,32 +48,31 @@ final class ObjectCollectionTest extends TestCase
     public function typeValidationProvider(): array
     {
         return [
-            'correct_object_1' => [new MockObject1()],
-            'correct_object_2' => [new MockObject2()],
-            'correct_object_3' => [$this->createMock(MockObjectInterface::class)],
+            'correct_object' => [$this->createSubject()],
             'incorrect_instance' => [new stdClass()],
             'string' => [''],
             'integer' => [0],
             'float' => [0.1],
+            'array' => [[]],
         ];
     }
 
     public function testToArray(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject1();
-        $instance3 = new MockObject1();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
+        $instance3 = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance1, $instance2, $instance3]);
+        $collection = $this->createMockedCollection([$instance1, $instance2, $instance3]);
 
         self::assertSame(['_0' => $instance1, '_1' => $instance2, '_2' => $instance3], $collection->toArray());
     }
 
     public function testFirst(): void
     {
-        $instance = new MockObject1();
+        $instance = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance, new MockObject1()]);
+        $collection = $this->createMockedCollection([$instance, $this->createSubject()]);
         self::assertSame($instance, $collection->first());
         $collection->getIterator()->next();
         self::assertSame($instance, $collection->first());
@@ -82,9 +80,9 @@ final class ObjectCollectionTest extends TestCase
 
     public function testLast(): void
     {
-        $instance = new MockObject1();
+        $instance = $this->createSubject();
 
-        $collection = new MockObjectCollection([new MockObject1(), $instance]);
+        $collection = $this->createMockedCollection([$this->createSubject(), $instance]);
         self::assertSame($instance, $collection->last());
         $collection->getIterator()->next();
         self::assertSame($instance, $collection->last());
@@ -92,9 +90,9 @@ final class ObjectCollectionTest extends TestCase
 
     public function testRemove(): void
     {
-        $instance = new MockObject1();
+        $instance = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance]);
+        $collection = $this->createMockedCollection([$instance]);
         self::assertTrue($collection->contains($instance));
         $collection->remove($instance);
         self::assertFalse($collection->contains($instance));
@@ -102,7 +100,7 @@ final class ObjectCollectionTest extends TestCase
 
     public function testMap(): void
     {
-        $collection = new MockObjectCollection([new MockObject1(), new MockObject2()]);
+        $collection = $this->createMockedCollection([$this->createSubject('mock_1'), $this->createSubject('mock_2')]);
         $output = $collection->map(static function (MockObjectInterface $mockObject): string {
             return $mockObject->getText();
         });
@@ -112,12 +110,12 @@ final class ObjectCollectionTest extends TestCase
 
     public function testFilter(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
+        $instance1 = $this->createSubject('test', 2);
+        $instance2 = $this->createSubject('test', 1);
 
-        $collection = new MockObjectCollection([$instance1, $instance2]);
+        $collection = $this->createMockedCollection([$instance1, $instance2]);
         $filtered = $collection->filter(static function (MockObjectInterface $mockObject): bool {
-            return $mockObject instanceof MockObject1;
+            return $mockObject->getInt() > 1;
         });
 
         self::assertTrue($filtered->contains($instance1));
@@ -126,11 +124,11 @@ final class ObjectCollectionTest extends TestCase
 
     public function testMerge(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject1();
-        $instance3 = new MockObject1();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
+        $instance3 = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance1]);
+        $collection = $this->createMockedCollection([$instance1]);
         self::assertTrue($collection->contains($instance1));
         self::assertFalse($collection->contains($instance2));
         self::assertFalse($collection->contains($instance3));
@@ -140,7 +138,7 @@ final class ObjectCollectionTest extends TestCase
         self::assertTrue($collection->contains($instance2));
         self::assertFalse($collection->contains($instance3));
 
-        $collection->merge(new MockObjectCollection([$instance3]));
+        $collection->merge($this->createMockedCollection([$instance3]));
         self::assertFalse($collection->contains($instance1));
         self::assertTrue($collection->contains($instance2));
         self::assertTrue($collection->contains($instance3));
@@ -148,16 +146,16 @@ final class ObjectCollectionTest extends TestCase
 
     public function testIsEmpty(): void
     {
-        $collection = new MockObjectCollection([]);
+        $collection = $this->createMockedCollection([]);
         self::assertTrue($collection->isEmpty());
-        $collection->append(new MockObject1());
+        $collection->append($this->createSubject());
         self::assertFalse($collection->isEmpty());
     }
 
     public function testContains(): void
     {
-        $instance = new MockObject1();
-        $collection = new MockObjectCollection([]);
+        $instance = $this->createSubject();
+        $collection = $this->createMockedCollection([]);
 
         self::assertFalse($collection->contains($instance));
         $collection->append($instance);
@@ -167,7 +165,7 @@ final class ObjectCollectionTest extends TestCase
     public function testClear(): void
     {
 
-        $collection = new MockObjectCollection([new MockObject1()]);
+        $collection = $this->createMockedCollection([$this->createSubject()]);
         self::assertFalse($collection->isEmpty());
         $collection->clear();
         self::assertTrue($collection->isEmpty());
@@ -175,17 +173,17 @@ final class ObjectCollectionTest extends TestCase
 
     public function testGetKeys(): void
     {
-        $collection = new MockObjectCollection(['x' => new MockObject1()]);
-        $collection->offsetSet('y', new MockObject1());
+        $collection = $this->createMockedCollection(['x' => $this->createSubject()]);
+        $collection->offsetSet('y', $this->createSubject());
 
         self::assertSame(['x', 'y'], $collection->getKeys());
     }
 
     public function testGetValues(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject1();
-        $collection = new MockObjectCollection([$instance1, $instance2]);
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
+        $collection = $this->createMockedCollection([$instance1, $instance2]);
 
         self::assertSame([$instance1, $instance2], $collection->getValues());
     }
@@ -193,10 +191,10 @@ final class ObjectCollectionTest extends TestCase
     public function testSlice(): void
     {
 
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject1();
-        $instance3 = new MockObject1();
-        $collection = new MockObjectCollection([$instance1, $instance2, $instance3]);
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
+        $instance3 = $this->createSubject();
+        $collection = $this->createMockedCollection([$instance1, $instance2, $instance3]);
 
         self::assertSame([$instance1], $collection->slice(0, 1)->getValues());
         self::assertSame([$instance2], $collection->slice(1, 1)->getValues());
@@ -208,19 +206,20 @@ final class ObjectCollectionTest extends TestCase
 
     public function testGetOneBy(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
-        $collection = new MockObjectCollection([$instance1, $instance2]);
+        $instance1 = $this->createSubject('mock_1');
+        $instance2 = $this->createSubject('mock_2');
+        $collection = $this->createMockedCollection([$instance1, $instance2]);
 
         self::assertSame(
             $collection->getOneBy(function (MockObjectInterface $mockObject): bool {
-                return $mockObject instanceof MockObject1;
+                return 'mock_1' === $mockObject->getText();
             }),
             $instance1
         );
+
         self::assertSame(
             $collection->getOneBy(function (MockObjectInterface $mockObject): bool {
-                return $mockObject instanceof MockObject2;
+                return 'mock_2' === $mockObject->getText();
             }),
             $instance2
         );
@@ -233,29 +232,29 @@ final class ObjectCollectionTest extends TestCase
 
     public function testGetOneOrNullBy(): void
     {
-        $instance1 = new MockObject1();
-        $collection = new MockObjectCollection([$instance1]);
+        $instance1 = $this->createSubject('test');
+        $collection = $this->createMockedCollection([$instance1]);
 
         self::assertSame(
             $collection->getOneOrNullBy(function (MockObjectInterface $mockObject): bool {
-                return $mockObject instanceof MockObject1;
+                return 'test' === $mockObject->getText();
             }),
             $instance1
         );
 
         self::assertNull(
             $collection->getOneOrNullBy(function (MockObjectInterface $mockObject): bool {
-                return $mockObject instanceof MockObject2;
+                return 'not_test' === $mockObject->getText();
             })
         );
     }
 
     public function testExchangeArray(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject1();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance1]);
+        $collection = $this->createMockedCollection([$instance1]);
         self::assertTrue($collection->contains($instance1));
         self::assertFalse($collection->contains($instance2));
 
@@ -266,10 +265,10 @@ final class ObjectCollectionTest extends TestCase
 
     public function testOffsetSet(): void
     {
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
 
         $key = 'key';
-        $value = new MockObject1();
+        $value = $this->createSubject();
 
         $collection->offsetSet($key, $value);
 
@@ -278,7 +277,7 @@ final class ObjectCollectionTest extends TestCase
 
     public function testGetFlags(): void
     {
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
         $flags = $collection->getFlags();
         self::assertSame(\ArrayObject::ARRAY_AS_PROPS, $flags);
     }
@@ -286,7 +285,7 @@ final class ObjectCollectionTest extends TestCase
     public function testSetFlags(): void
     {
 
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
 
         $flags = $collection->getFlags();
         self::assertSame(\ArrayObject::ARRAY_AS_PROPS, $flags);
@@ -298,8 +297,8 @@ final class ObjectCollectionTest extends TestCase
 
     public function testAppend(): void
     {
-        $instance = new MockObject1();
-        $collection = new MockObjectCollection();
+        $instance = $this->createSubject();
+        $collection = $this->createMockedCollection();
 
         self::assertFalse($collection->contains($instance));
         $collection->append($instance);
@@ -308,22 +307,22 @@ final class ObjectCollectionTest extends TestCase
 
     public function testAsort(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
 
-        $collection = new MockObjectCollection([$instance1, $instance2]);
+        $collection = $this->createMockedCollection([$instance1, $instance2]);
 
         $collection->asort();
 
-        self::assertSame($collection->toArray(), ['_1' => $instance2, '_0' => $instance1]);
+        self::assertSame($collection->toArray(), ['_0' => $instance1, '_1' => $instance2]);
     }
 
     public function testKsort(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
 
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
 
         $collection->offsetSet('y', $instance2);
         $collection->offsetSet('x', $instance1);
@@ -332,27 +331,12 @@ final class ObjectCollectionTest extends TestCase
         self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
     }
 
-    public function testNatcasesort(): void
-    {
-        $collection = new MockObjectCollection();
-        $this->expectException(LogicException::class);
-        $collection->natcasesort();
-    }
-
-    public function testNatsort(): void
-    {
-
-        $collection = new MockObjectCollection();
-        $this->expectException(LogicException::class);
-        $collection->natsort();
-    }
-
     public function testUasort(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
+        $instance1 = $this->createSubject('test', 1);
+        $instance2 = $this->createSubject('test', 2);
 
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
 
         $collection->offsetSet('y', $instance2);
         $collection->offsetSet('x', $instance1);
@@ -370,26 +354,72 @@ final class ObjectCollectionTest extends TestCase
         self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
     }
 
+    private function createMockedCollection(array $items = []): AbstractObjectCollection
+    {
+        return new class($items) extends AbstractObjectCollection
+        {
+            /**
+             * @inheritDoc
+             */
+            protected function allowedInstance(): string
+            {
+                return MockObjectInterface::class;
+            }
+        };
+    }
+
     public function testUksort(): void
     {
-        $instance1 = new MockObject1();
-        $instance2 = new MockObject2();
+        $instance1 = $this->createSubject();
+        $instance2 = $this->createSubject();
 
-        $collection = new MockObjectCollection();
+        $collection = $this->createMockedCollection();
 
         $collection->offsetSet('y', $instance2);
         $collection->offsetSet('x', $instance1);
 
-        $collection->uasort(static function ($a, $b): int {
+        $collection->uksort(static function ($a, $b): int {
             return $b <=> $a;
         });
 
-        self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
+        self::assertSame($collection->toArray(), ['y' => $instance2, 'x' => $instance1]);
 
-        $collection->uasort(static function ($a, $b): int {
+        $collection->uksort(static function ($a, $b): int {
             return $a <=> $b;
         });
 
-        self::assertSame($collection->toArray(), ['y' => $instance2, 'x' => $instance1]);
+        self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
+    }
+
+    private function createSubject(string $text = '', int $int = 0): MockObjectInterface
+    {
+        return new class($text, $int) implements MockObjectInterface
+        {
+            /**
+             * @var string
+             */
+            protected $text;
+
+            /**
+             * @var int
+             */
+            protected $int;
+
+            public function __construct(string $text, int $int)
+            {
+                $this->text = $text;
+                $this->int = $int;
+            }
+
+            public function getText(): string
+            {
+                return $this->text;
+            }
+
+            public function getInt(): int
+            {
+                return $this->int;
+            }
+        };
     }
 }
