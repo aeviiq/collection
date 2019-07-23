@@ -354,20 +354,6 @@ final class ObjectCollectionTest extends TestCase
         self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
     }
 
-    private function createMockedCollection(array $items = []): AbstractObjectCollection
-    {
-        return new class($items) extends AbstractObjectCollection
-        {
-            /**
-             * @inheritDoc
-             */
-            protected function allowedInstance(): string
-            {
-                return MockObjectInterface::class;
-            }
-        };
-    }
-
     public function testUksort(): void
     {
         $instance1 = $this->createSubject();
@@ -389,6 +375,20 @@ final class ObjectCollectionTest extends TestCase
         });
 
         self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
+    }
+
+    private function createMockedCollection(array $items = []): AbstractObjectCollection
+    {
+        return new class($items) extends AbstractObjectCollection
+        {
+            /**
+             * @inheritDoc
+             */
+            protected function allowedInstance(): string
+            {
+                return MockObjectInterface::class;
+            }
+        };
     }
 
     private function createSubject(string $text = '', int $int = 0): MockObjectInterface
