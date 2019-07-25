@@ -169,6 +169,17 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
+     * @see https://github.com/aeviiq/collection/issues/32
+     *
+     * {@inheritdoc}
+     */
+    public function getIterator(): \Traversable
+    {
+        $iterator = $this->getIteratorClass();
+        return new $iterator($this->toArray());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOneBy(\Closure $closure)
