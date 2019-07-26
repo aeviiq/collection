@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aeviiq\Tests\Collection\Mock;
+namespace Aeviiq\Collection\Tests\Mock;
 
 interface MockObjectInterface
 {
