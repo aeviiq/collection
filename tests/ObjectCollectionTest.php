@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Aeviiq\Tests\Collection;
+namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractObjectCollection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
-use Aeviiq\Tests\Collection\Mock\MockObjectCollection;
-use Aeviiq\Tests\Collection\Mock\MockObjectInterface;
+use Aeviiq\Collection\Tests\Mock\MockObjectInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

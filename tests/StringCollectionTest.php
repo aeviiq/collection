@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aeviiq\Tests\Collection;
+namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\CollectionInterface;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
@@ -247,5 +247,22 @@ final class StringCollectionTest extends TestCase
         
         self::assertCount(1, $collection);
         self::assertSame($last, $collection->first());
+    }
+
+    /**
+     * @see https://github.com/aeviiq/collection/issues/32
+     *
+     * @return void
+     */
+    public function testIterator(): void
+    {
+        $collection = new StringCollection(['1', '2', '3']);
+        $loopCount = 0;
+        foreach ($collection as $key => $value) {
+            $collection->offsetUnset($key);
+            ++$loopCount;
+        }
+
+        $this->assertSame(3, $loopCount);
     }
 }

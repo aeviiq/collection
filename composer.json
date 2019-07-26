@@ -21,7 +21,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Aeviiq\\Tests\\Collection\\": "tests/"
+            "Aeviiq\\Collection\\Tests\\": "tests/"
         }
     },
     "require": {
