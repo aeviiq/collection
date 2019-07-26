@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aeviiq\Tests\Collection;
+namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\CollectionInterface;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
