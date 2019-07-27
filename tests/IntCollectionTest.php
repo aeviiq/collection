@@ -319,6 +319,6 @@ final class IntCollectionTest extends TestCase
 
     private function createExpectedInvalidArgumentExceptionMessage($value): string
     {
-        return \sprintf('"Aeviiq\Collection\IntCollection" only allows elements of type "integer", "%s" given.', \gettype($value));
+        return \sprintf('"%s" only allows elements of type "integer", "%s" given.', IntCollection::class, \gettype($value));
     }
 }
