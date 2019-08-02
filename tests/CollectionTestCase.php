@@ -10,7 +10,7 @@ abstract class CollectionTestCase extends TestCase
 {
     public function testInstanceCreation(): void
     {
-        $expected = $this->createFirstThreeValidValues();
+        $expected = $this->getFirstThreeValidValues();
         $collection = $this->createCollectionWithElements($expected);
         $this->assertSame($expected, $collection->toArray());
     }
@@ -30,7 +30,7 @@ abstract class CollectionTestCase extends TestCase
     public function testAppend(): void
     {
         $collection = $this->createEmptyCollection();
-        $expected = $this->createFirstThreeValidValues();
+        $expected = $this->getFirstThreeValidValues();
         $collection->append($this->getFirstValidValue());
         $collection->append($this->getSecondValidValue());
         $collection->append($this->getThirdValidValue());
@@ -52,7 +52,7 @@ abstract class CollectionTestCase extends TestCase
 
     public function testOffsetSet(): void
     {
-        $expected = $this->createFirstThreeValidValues();
+        $expected = $this->getFirstThreeValidValues();
         $collection = $this->createEmptyCollection();
         foreach ($expected as $key => $value) {
             $collection->offsetSet($key, $value);
@@ -75,8 +75,8 @@ abstract class CollectionTestCase extends TestCase
 
     public function testExchangeArray(): void
     {
-        $expectedPrevious = $this->createFirstThreeValidValues();
-        $expectedCurrent = $this->createLastThreeValidValues();
+        $expectedPrevious = $this->getFirstThreeValidValues();
+        $expectedCurrent = $this->getLastThreeValidValues();
         $collection = $this->createCollectionWithElements($expectedPrevious);
         $previous = $collection->exchangeArray($expectedCurrent);
         $this->assertSame($expectedPrevious, $previous->toArray());
@@ -100,14 +100,14 @@ abstract class CollectionTestCase extends TestCase
 
     public function testToArray(): void
     {
-        $expected = $this->createFirstThreeValidValues();
+        $expected = $this->getFirstThreeValidValues();
         $collection = $this->createCollectionWithElements($expected);
         $this->assertSame($expected, $collection->toArray());
     }
 
     public function testFirstWithMultipleEntries(): void
     {
-        $elements = $this->createFirstThreeValidValues();
+        $elements = $this->getFirstThreeValidValues();
         $expected = \reset($elements);
         $collection = $this->createCollectionWithElements($elements);
         $this->assertSame($expected, $collection->first());
@@ -121,7 +121,7 @@ abstract class CollectionTestCase extends TestCase
 
     public function testLastWithMultipleEntries(): void
     {
-        $elements = $this->createFirstThreeValidValues();
+        $elements = $this->getFirstThreeValidValues();
         $expected = \end($elements);
         $collection = $this->createCollectionWithElements($elements);
         $this->assertSame($expected, $collection->last());
@@ -157,8 +157,8 @@ abstract class CollectionTestCase extends TestCase
 
     public function testMergeWithCollection(): void
     {
-        $expected1 = $this->createFirstThreeValidValues();
-        $expected2 = $this->createLastThreeValidValues();
+        $expected1 = $this->getFirstThreeValidValues();
+        $expected2 = $this->getLastThreeValidValues();
         $collection1 = $this->createCollectionWithElements($expected1);
         $collection2 = $this->createCollectionWithElements($expected2);
         $collection1->merge($collection2);
@@ -167,8 +167,8 @@ abstract class CollectionTestCase extends TestCase
 
     public function testMergeWithArray(): void
     {
-        $expected1 = $this->createFirstThreeValidValues();
-        $expected2 = $this->createLastThreeValidValues();
+        $expected1 = $this->getFirstThreeValidValues();
+        $expected2 = $this->getLastThreeValidValues();
         $collection = $this->createCollectionWithElements($expected1);
         $collection->merge($expected2);
         $this->assertSame(\array_merge($expected1, $expected2), $collection->toArray());
@@ -181,7 +181,7 @@ abstract class CollectionTestCase extends TestCase
      */
     public function testMergeWithInvalidDataTypes($value): void
     {
-        $collection = $this->createCollectionWithElements($this->createFirstThreeValidValues());
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
 
@@ -196,6 +196,25 @@ abstract class CollectionTestCase extends TestCase
         $this->assertFalse($collection->isEmpty());
     }
 
+    public function testContains(): void
+    {
+        $collection = $this->createCollectionWithElements([$this->getFirstValidValue()]);
+        $this->assertTrue($collection->contains($this->getFirstValidValue()));
+        $this->assertFalse($collection->contains($this->getSecondValidValue()));
+        $collection->append($this->getSecondValidValue());
+        $this->assertTrue($collection->contains($this->getSecondValidValue()));
+    }
+
+    public function testClear(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $this->assertCount(3, $collection);
+        $this->assertFalse($collection->isEmpty());
+        $collection->clear();
+        $this->assertCount(0, $collection);
+        $this->assertTrue($collection->isEmpty());
+    }
+
     /**
      * @see https://github.com/aeviiq/collection/issues/32
      *
@@ -203,7 +222,7 @@ abstract class CollectionTestCase extends TestCase
      */
     public function testIterator(): void
     {
-        $collection = $this->createCollectionWithElements($this->createFirstThreeValidValues());
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
         $loopCount = 0;
         foreach ($collection as $key => $value) {
             $collection->offsetUnset($key);
@@ -225,7 +244,7 @@ abstract class CollectionTestCase extends TestCase
     /**
      * @return mixed[]
      */
-    protected function createFirstThreeValidValues(): array
+    protected function getFirstThreeValidValues(): array
     {
         return [
             $this->getFirstValidValue(),
@@ -237,7 +256,7 @@ abstract class CollectionTestCase extends TestCase
     /**
      * @return mixed[]
      */
-    protected function createLastThreeValidValues(): array
+    protected function getLastThreeValidValues(): array
     {
         return [
             $this->getForthValidValue(),
