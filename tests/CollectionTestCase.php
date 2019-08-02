@@ -4,7 +4,6 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractCollection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Aeviiq\Collection\IntCollection;
 use PHPUnit\Framework\TestCase;
 
 abstract class CollectionTestCase extends TestCase
@@ -156,6 +155,64 @@ abstract class CollectionTestCase extends TestCase
         $this->assertSame($expected, $collection->toArray());
     }
 
+    public function testMergeWithCollection(): void
+    {
+        $expected1 = $this->createFirstThreeValidValues();
+        $expected2 = $this->createLastThreeValidValues();
+        $collection1 = $this->createCollectionWithElements($expected1);
+        $collection2 = $this->createCollectionWithElements($expected2);
+        $collection1->merge($collection2);
+        $this->assertSame(\array_merge($expected1, $expected2), $collection1->toArray());
+    }
+
+    public function testMergeWithArray(): void
+    {
+        $expected1 = $this->createFirstThreeValidValues();
+        $expected2 = $this->createLastThreeValidValues();
+        $collection = $this->createCollectionWithElements($expected1);
+        $collection->merge($expected2);
+        $this->assertSame(\array_merge($expected1, $expected2), $collection->toArray());
+    }
+
+    /**
+     * @dataProvider invalidDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testMergeWithInvalidDataTypes($value): void
+    {
+        $collection = $this->createCollectionWithElements($this->createFirstThreeValidValues());
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
+
+        $collection->merge([$value]);
+    }
+
+    public function testIsEmpty(): void
+    {
+        $collection = $this->createEmptyCollection();
+        $this->assertTrue($collection->isEmpty());
+        $collection->append($this->getFirstValidValue());
+        $this->assertFalse($collection->isEmpty());
+    }
+
+    /**
+     * @see https://github.com/aeviiq/collection/issues/32
+     *
+     * @return void
+     */
+    public function testIterator(): void
+    {
+        $collection = $this->createCollectionWithElements($this->createFirstThreeValidValues());
+        $loopCount = 0;
+        foreach ($collection as $key => $value) {
+            $collection->offsetUnset($key);
+            ++$loopCount;
+        }
+
+        $this->assertSame(3, $loopCount);
+    }
+
     abstract public function testMap(): void;
 
     abstract public function testFilter(): void;
@@ -191,7 +248,7 @@ abstract class CollectionTestCase extends TestCase
 
     protected function createExpectedInvalidArgumentExceptionMessage($value): string
     {
-        return \sprintf('"%s" only allows elements of type "integer", "%s" given.', IntCollection::class, \gettype($value));
+        return \sprintf('"%s" only allows elements of type "%s", "%s" given.', $this->getCollectionClass(), $this->getExpectedDataType(), \gettype($value));
     }
 
     protected function createEmptyCollection(): AbstractCollection
@@ -242,4 +299,6 @@ abstract class CollectionTestCase extends TestCase
      * @return mixed A value that is valid for the implemented. Should return a reference for objects.
      */
     abstract protected function getSixthValidValue();
+
+    abstract protected function getExpectedDataType(): string;
 }
