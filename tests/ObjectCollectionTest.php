@@ -3,419 +3,228 @@
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractObjectCollection;
-use Aeviiq\Collection\Exception\InvalidArgumentException;
-use Aeviiq\Collection\Exception\LogicException;
-use Aeviiq\Collection\Tests\Mock\MockObjectInterface;
-use PHPUnit\Framework\TestCase;
-use stdClass;
+use Aeviiq\Collection\Util\IndexGenerator;
 
-final class ObjectCollectionTest extends TestCase
+final class ObjectCollectionTest extends CollectionTestCase
 {
     /**
-     * @dataProvider typeValidationProvider
+     * @var \IteratorAggregate
      */
-    public function testTypeValidation($value): void
+    private $firstSubject;
+
+    /**
+     * @var \IteratorAggregate
+     */
+    private $secondSubject;
+
+    /**
+     * @var \IteratorAggregate
+     */
+    private $thirdSubject;
+
+    /**
+     * @var \IteratorAggregate
+     */
+    private $forthSubject;
+
+    /**
+     * @var \IteratorAggregate
+     */
+    private $fifthSubject;
+
+    /**
+     * @var \IteratorAggregate
+     */
+    private $sixthSubject;
+
+    /**
+     * @var string
+     */
+    private $creationCount = 'a';
+
+    public function testMap(): void
     {
-        if (!$value instanceof MockObjectInterface) {
-            $this->expectException(InvalidArgumentException::class);
-        }
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $result = $collection->map(static function ($value) {
+            return $value . '123';
+        });
+        $expected = ['Foo Bar Baz Baa123', 'Foo Bar Baz Bab123', 'Foo Bar Baz Bac123'];
+        $expected = $this->prepareExpectedResult($expected);
+        $this->assertSame($expected, $result);
+    }
 
-        $this->createMockedCollection([$value]);
-        $this->addToAssertionCount(1);
+    /**
+     * {@inheritDoc}
+     */
+    public function invalidDataProvider(): array
+    {
+        return [
+            'int' => [1],
+            'float' => [0.1],
+            'string' => ['foobar'],
+            'bool' => [true],
+            'null' => [null],
+            'array' => [[]],
+            'object' => [new \stdClass()],
+            'callable' => [
+                static function () {
+                },
+            ],
+        ];
+    }
 
-        $this->createMockedCollection([$value]);
-        $this->addToAssertionCount(1);
+    protected function getCollectionClass(): string
+    {
+        return \get_class($this->createMockedCollection());
+    }
 
-        ($this->createMockedCollection())->append($value);
-        $this->addToAssertionCount(1);
+    /**
+     * {@inheritDoc}
+     */
+    protected function getFirstValidValue()
+    {
+        return $this->firstSubject;
+    }
 
-        ($this->createMockedCollection())->offsetSet('', $value);
-        $this->addToAssertionCount(1);
+    /**
+     * {@inheritDoc}
+     */
+    protected function getSecondValidValue()
+    {
+        return $this->secondSubject;
+    }
 
-        ($this->createMockedCollection())->exchangeArray([$value]);
-        $this->addToAssertionCount(1);
+    /**
+     * {@inheritDoc}
+     */
+    protected function getThirdValidValue()
+    {
+        return $this->thirdSubject;
+    }
 
-        ($this->createMockedCollection())->merge([$value]);
-        $this->addToAssertionCount(1);
+    /**
+     * {@inheritDoc}
+     */
+    protected function getForthValidValue()
+    {
+        return $this->forthSubject;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getFifthValidValue()
+    {
+        return $this->fifthSubject;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getSixthValidValue()
+    {
+        return $this->sixthSubject;
+    }
+
+    protected function getExpectedDataType(): string
+    {
+        return 'object';
     }
 
     /**
      * @return mixed[]
      */
-    public function typeValidationProvider(): array
+    protected function getFirstThreeValidValues(): array
     {
         return [
-            'correct_object' => [$this->createSubject()],
-            'incorrect_instance' => [new stdClass()],
-            'string' => [''],
-            'integer' => [0],
-            'float' => [0.1],
-            'array' => [[]],
+            '_0' => $this->getFirstValidValue(),
+            '_1' => $this->getSecondValidValue(),
+            '_2' => $this->getThirdValidValue(),
         ];
     }
 
-    public function testToArray(): void
+    /**
+     * @return mixed[]
+     */
+    protected function getLastThreeValidValues(): array
     {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-        $instance3 = $this->createSubject();
-
-        $collection = $this->createMockedCollection([$instance1, $instance2, $instance3]);
-
-        self::assertSame(['_0' => $instance1, '_1' => $instance2, '_2' => $instance3], $collection->toArray());
+        return [
+            '_3' => $this->getForthValidValue(),
+            '_4' => $this->getFifthValidValue(),
+            '_5' => $this->getSixthValidValue(),
+        ];
     }
 
-    public function testFirst(): void
+    /**
+     * @inheritDoc
+     */
+    protected function prepareExpectedResult($expectedResult)
     {
-        $instance = $this->createSubject();
+        if (\is_array($expectedResult)) {
+            return IndexGenerator::createUniqueValidIndexesForArray($expectedResult, []);
+        }
 
-        $collection = $this->createMockedCollection([$instance, $this->createSubject()]);
-        self::assertSame($instance, $collection->first());
-        $collection->getIterator()->next();
-        self::assertSame($instance, $collection->first());
+        return IndexGenerator::createValidIndex($expectedResult);
     }
 
-    public function testLast(): void
+    protected function createExpectedInvalidArgumentExceptionMessage($value): string
     {
-        $instance = $this->createSubject();
+        if (\is_object($value)) {
+            return \sprintf(
+                '"%s" only allows elements that are an instance of "%s", "%s" given.',
+                $this->getCollectionClass(),
+                \IteratorAggregate::class,
+                \get_class($value)
+            );
+        }
 
-        $collection = $this->createMockedCollection([$this->createSubject(), $instance]);
-        self::assertSame($instance, $collection->last());
-        $collection->getIterator()->next();
-        self::assertSame($instance, $collection->last());
+        return \sprintf('"%s" only allows elements of type "%s", "%s" given.', $this->getCollectionClass(), $this->getExpectedDataType(), \gettype($value));
     }
 
-    public function testRemove(): void
+    protected function setUp(): void
     {
-        $instance = $this->createSubject();
-
-        $collection = $this->createMockedCollection([$instance]);
-        self::assertTrue($collection->contains($instance));
-        $collection->remove($instance);
-        self::assertFalse($collection->contains($instance));
-    }
-
-    public function testMap(): void
-    {
-        $collection = $this->createMockedCollection([$this->createSubject('mock_1'), $this->createSubject('mock_2')]);
-        $output = $collection->map(static function (MockObjectInterface $mockObject): string {
-            return $mockObject->getText();
-        });
-
-        self::assertSame(['_0' => 'mock_1', '_1' => 'mock_2'], $output);
-    }
-
-    public function testFilter(): void
-    {
-        $instance1 = $this->createSubject('test', 2);
-        $instance2 = $this->createSubject('test', 1);
-
-        $collection = $this->createMockedCollection([$instance1, $instance2]);
-        $filtered = $collection->filter(static function (MockObjectInterface $mockObject): bool {
-            return $mockObject->getInt() > 1;
-        });
-
-        self::assertTrue($filtered->contains($instance1));
-        self::assertFalse($filtered->contains($instance2));
-    }
-
-    public function testMerge(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-        $instance3 = $this->createSubject();
-
-        $collection = $this->createMockedCollection([$instance1]);
-        self::assertTrue($collection->contains($instance1));
-        self::assertFalse($collection->contains($instance2));
-        self::assertFalse($collection->contains($instance3));
-
-        $collection->merge([$instance2]);
-        self::assertTrue($collection->contains($instance1));
-        self::assertTrue($collection->contains($instance2));
-        self::assertFalse($collection->contains($instance3));
-
-        $collection->merge($this->createMockedCollection([$instance3]));
-        self::assertFalse($collection->contains($instance1));
-        self::assertTrue($collection->contains($instance2));
-        self::assertTrue($collection->contains($instance3));
-    }
-
-    public function testIsEmpty(): void
-    {
-        $collection = $this->createMockedCollection([]);
-        self::assertTrue($collection->isEmpty());
-        $collection->append($this->createSubject());
-        self::assertFalse($collection->isEmpty());
-    }
-
-    public function testContains(): void
-    {
-        $instance = $this->createSubject();
-        $collection = $this->createMockedCollection([]);
-
-        self::assertFalse($collection->contains($instance));
-        $collection->append($instance);
-        self::assertTrue($collection->contains($instance));
-    }
-
-    public function testClear(): void
-    {
-
-        $collection = $this->createMockedCollection([$this->createSubject()]);
-        self::assertFalse($collection->isEmpty());
-        $collection->clear();
-        self::assertTrue($collection->isEmpty());
-    }
-
-    public function testGetKeys(): void
-    {
-        $collection = $this->createMockedCollection(['x' => $this->createSubject()]);
-        $collection->offsetSet('y', $this->createSubject());
-
-        self::assertSame(['x', 'y'], $collection->getKeys());
-    }
-
-    public function testGetValues(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-        $collection = $this->createMockedCollection([$instance1, $instance2]);
-
-        self::assertSame([$instance1, $instance2], $collection->getValues());
-    }
-
-    public function testSlice(): void
-    {
-
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-        $instance3 = $this->createSubject();
-        $collection = $this->createMockedCollection([$instance1, $instance2, $instance3]);
-
-        self::assertSame([$instance1], $collection->slice(0, 1)->getValues());
-        self::assertSame([$instance2], $collection->slice(1, 1)->getValues());
-        self::assertSame([$instance2, $instance3], $collection->slice(1, 2)->getValues());
-        self::assertSame([$instance3], $collection->slice(-1, 1)->getValues());
-        self::assertSame([$instance3], $collection->slice(-1, 2)->getValues());
-        self::assertSame([$instance2, $instance3], $collection->slice(-2, 2)->getValues());
-    }
-
-    public function testGetOneBy(): void
-    {
-        $instance1 = $this->createSubject('mock_1');
-        $instance2 = $this->createSubject('mock_2');
-        $collection = $this->createMockedCollection([$instance1, $instance2]);
-
-        self::assertSame(
-            $collection->getOneBy(function (MockObjectInterface $mockObject): bool {
-                return 'mock_1' === $mockObject->getText();
-            }),
-            $instance1
-        );
-
-        self::assertSame(
-            $collection->getOneBy(function (MockObjectInterface $mockObject): bool {
-                return 'mock_2' === $mockObject->getText();
-            }),
-            $instance2
-        );
-
-        $this->expectException(LogicException::class);
-        $collection->getOneBy(function (MockObjectInterface $mockObject): bool {
-            return true;
-        });
-    }
-
-    public function testGetOneOrNullBy(): void
-    {
-        $instance1 = $this->createSubject('test');
-        $collection = $this->createMockedCollection([$instance1]);
-
-        self::assertSame(
-            $collection->getOneOrNullBy(function (MockObjectInterface $mockObject): bool {
-                return 'test' === $mockObject->getText();
-            }),
-            $instance1
-        );
-
-        self::assertNull(
-            $collection->getOneOrNullBy(function (MockObjectInterface $mockObject): bool {
-                return 'not_test' === $mockObject->getText();
-            })
-        );
-    }
-
-    public function testExchangeArray(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-
-        $collection = $this->createMockedCollection([$instance1]);
-        self::assertTrue($collection->contains($instance1));
-        self::assertFalse($collection->contains($instance2));
-
-        $collection->exchangeArray([$instance2]);
-        self::assertFalse($collection->contains($instance1));
-        self::assertTrue($collection->contains($instance2));
-    }
-
-    public function testOffsetSet(): void
-    {
-        $collection = $this->createMockedCollection();
-
-        $key = 'key';
-        $value = $this->createSubject();
-
-        $collection->offsetSet($key, $value);
-
-        self::assertSame($value, $collection->offsetGet($key));
-    }
-
-    public function testGetFlags(): void
-    {
-        $collection = $this->createMockedCollection();
-        $flags = $collection->getFlags();
-        self::assertSame(\ArrayObject::ARRAY_AS_PROPS, $flags);
-    }
-
-    public function testSetFlags(): void
-    {
-
-        $collection = $this->createMockedCollection();
-
-        $flags = $collection->getFlags();
-        self::assertSame(\ArrayObject::ARRAY_AS_PROPS, $flags);
-
-        $collection->setFlags(\ArrayObject::STD_PROP_LIST);
-        $flags = $collection->getFlags();
-        self::assertSame(\ArrayObject::STD_PROP_LIST, $flags);
-    }
-
-    public function testAppend(): void
-    {
-        $instance = $this->createSubject();
-        $collection = $this->createMockedCollection();
-
-        self::assertFalse($collection->contains($instance));
-        $collection->append($instance);
-        self::assertTrue($collection->contains($instance));
-    }
-
-    public function testAsort(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-
-        $collection = $this->createMockedCollection([$instance1, $instance2]);
-
-        $collection->asort();
-
-        self::assertSame($collection->toArray(), ['_0' => $instance1, '_1' => $instance2]);
-    }
-
-    public function testKsort(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-
-        $collection = $this->createMockedCollection();
-
-        $collection->offsetSet('y', $instance2);
-        $collection->offsetSet('x', $instance1);
-        $collection->ksort();
-
-        self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
-    }
-
-    public function testUasort(): void
-    {
-        $instance1 = $this->createSubject('test', 1);
-        $instance2 = $this->createSubject('test', 2);
-
-        $collection = $this->createMockedCollection();
-
-        $collection->offsetSet('y', $instance2);
-        $collection->offsetSet('x', $instance1);
-
-        $collection->uasort(static function (MockObjectInterface $a, MockObjectInterface $b): int {
-            return $b->getInt() <=> $a->getInt();
-        });
-
-        self::assertSame($collection->toArray(), ['y' => $instance2, 'x' => $instance1]);
-
-        $collection->uasort(static function (MockObjectInterface $a, MockObjectInterface $b): int {
-            return $a->getInt() <=> $b->getInt();
-        });
-
-        self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
-    }
-
-    public function testUksort(): void
-    {
-        $instance1 = $this->createSubject();
-        $instance2 = $this->createSubject();
-
-        $collection = $this->createMockedCollection();
-
-        $collection->offsetSet('y', $instance2);
-        $collection->offsetSet('x', $instance1);
-
-        $collection->uksort(static function ($a, $b): int {
-            return $b <=> $a;
-        });
-
-        self::assertSame($collection->toArray(), ['y' => $instance2, 'x' => $instance1]);
-
-        $collection->uksort(static function ($a, $b): int {
-            return $a <=> $b;
-        });
-
-        self::assertSame($collection->toArray(), ['x' => $instance1, 'y' => $instance2]);
+        $this->firstSubject = $this->createSubject();
+        $this->secondSubject = $this->createSubject();
+        $this->thirdSubject = $this->createSubject();
+        $this->forthSubject = $this->createSubject();
+        $this->fifthSubject = $this->createSubject();
+        $this->sixthSubject = $this->createSubject();
     }
 
     private function createMockedCollection(array $items = []): AbstractObjectCollection
     {
         return new class($items) extends AbstractObjectCollection
         {
-            /**
-             * @inheritDoc
-             */
             protected function allowedInstance(): string
             {
-                return MockObjectInterface::class;
+                return \IteratorAggregate::class;
             }
         };
     }
 
-    private function createSubject(string $text = '', int $int = 0): MockObjectInterface
+    private function createSubject(): \IteratorAggregate
     {
-        return new class($text, $int) implements MockObjectInterface
+        $text = $this->creationCount++;
+        return new class($text) implements \IteratorAggregate
         {
             /**
              * @var string
              */
-            protected $text;
+            private $text;
 
-            /**
-             * @var int
-             */
-            protected $int;
+            public function __toString(): string
+            {
+                return 'Foo Bar Baz Ba' . $this->text;
+            }
 
-            public function __construct(string $text, int $int)
+            public function __construct(string $text)
             {
                 $this->text = $text;
-                $this->int = $int;
             }
 
-            public function getText(): string
+            public function getIterator()
             {
-                return $this->text;
-            }
-
-            public function getInt(): int
-            {
-                return $this->int;
+                return new \ArrayIterator([]);
             }
         };
     }
