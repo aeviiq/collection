@@ -12,7 +12,9 @@ final class IntCollectionTest extends CollectionTestCase
         $result = $collection->map(static function ($value) {
             return (string)$value;
         });
-        $this->assertSame(['1', '2', '3'], $result);
+        $expected = ['1', '2', '3'];
+        $expected = $this->prepareExpectedResult($expected);
+        $this->assertSame($expected, $result);
     }
 
     /**

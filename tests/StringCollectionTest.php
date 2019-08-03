@@ -12,7 +12,9 @@ final class StringCollectionTest extends CollectionTestCase
         $result = $collection->map(static function ($value) {
             return $value . '123';
         });
-        $this->assertSame(['foo123', 'bar123', 'baz123'], $result);
+        $expected = ['foo123', 'bar123', 'baz123'];
+        $expected = $this->prepareExpectedResult($expected);
+        $this->assertSame($expected, $result);
     }
 
     /**

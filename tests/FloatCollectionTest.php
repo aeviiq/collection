@@ -12,7 +12,9 @@ final class FloatCollectionTest extends CollectionTestCase
         $result = $collection->map(static function ($value) {
             return (string)$value;
         });
-        $this->assertSame(['1.1', '2.2', '3.3'], $result);
+        $expected = ['1.1', '2.2', '3.3'];
+        $expected = $this->prepareExpectedResult($expected);
+        $this->assertSame($expected, $result);
     }
 
     /**
