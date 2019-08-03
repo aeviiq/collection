@@ -142,6 +142,7 @@ abstract class CollectionTestCase extends TestCase
         $this->assertCount(3, $collection);
         $collection->remove($this->getSecondValidValue());
         $this->assertCount(2, $collection);
+        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $collection->toArray());
     }
 
@@ -153,6 +154,7 @@ abstract class CollectionTestCase extends TestCase
         $collection->remove('7ddf32e17a6ac5ce04a8ecbf782ca509');
         $collection->remove('59920e994636168744039017dcf49e54');
         $this->assertCount(2, $collection);
+        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $collection->toArray());
     }
 
@@ -163,7 +165,12 @@ abstract class CollectionTestCase extends TestCase
             return $this->getFirstValidValue() === $value || $this->getSecondValidValue() === $value;
         });
         $this->assertInstanceOf(\get_class($collection), $result);
-        $this->assertSame([$this->getFirstValidValue(), $this->getSecondValidValue()], $result->toArray());
+        $expected = [
+            $this->getFirstValidValue(),
+            $this->getSecondValidValue(),
+        ];
+        $expected = $this->prepareExpectedResult($expected);
+        $this->assertSame($expected, $result->toArray());
     }
 
     public function testMergeWithCollection(): void
@@ -229,14 +236,26 @@ abstract class CollectionTestCase extends TestCase
     public function testGetKeys(): void
     {
         $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
-        $this->assertSame([0, 1, 2], $collection->getKeys());
+        $expected = [
+            0 => true,
+            1 => true,
+            2 => true,
+        ];
+        $expected = \array_keys($this->prepareExpectedResult($expected));
+        $this->assertSame($expected, $collection->getKeys());
 
         $collection = $this->createCollectionWithElements([
             'key_1' => $this->getFirstValidValue(),
             'key_2' => $this->getSecondValidValue(),
             'key_3' => $this->getThirdValidValue(),
         ]);
-        $this->assertSame(['key_1', 'key_2', 'key_3'], $collection->getKeys());
+        $expected = [
+            'key_1' => true,
+            'key_2' => true,
+            'key_3' => true,
+        ];
+        $expected = \array_keys($this->prepareExpectedResult($expected));
+        $this->assertSame($expected, $collection->getKeys());
     }
 
     public function getValues(): void
@@ -376,6 +395,16 @@ abstract class CollectionTestCase extends TestCase
         $collectionClass = $this->getCollectionClass();
 
         return new $collectionClass($elements);
+    }
+
+    /**
+     * @param mixed $expectedResult
+     *
+     * @return mixed
+     */
+    protected function prepareExpectedResult($expectedResult)
+    {
+        return $expectedResult;
     }
 
     abstract protected function getCollectionClass(): string;
