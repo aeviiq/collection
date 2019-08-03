@@ -4,6 +4,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractCollection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Exception\LogicException;
 use PHPUnit\Framework\TestCase;
 
 abstract class CollectionTestCase extends TestCase
@@ -155,6 +156,16 @@ abstract class CollectionTestCase extends TestCase
         $this->assertSame($expected, $collection->toArray());
     }
 
+    public function testFilter(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $result = $collection->filter(function ($value) {
+            return $this->getFirstValidValue() === $value || $this->getSecondValidValue() === $value;
+        });
+        $this->assertInstanceOf(\get_class($collection), $result);
+        $this->assertSame([$this->getFirstValidValue(), $this->getSecondValidValue()], $result->toArray());
+    }
+
     public function testMergeWithCollection(): void
     {
         $expected1 = $this->getFirstThreeValidValues();
@@ -215,6 +226,88 @@ abstract class CollectionTestCase extends TestCase
         $this->assertTrue($collection->isEmpty());
     }
 
+    public function testGetKeys(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $this->assertSame([0, 1, 2], $collection->getKeys());
+
+        $collection = $this->createCollectionWithElements([
+            'key_1' => $this->getFirstValidValue(),
+            'key_2' => $this->getSecondValidValue(),
+            'key_3' => $this->getThirdValidValue(),
+        ]);
+        $this->assertSame(['key_1', 'key_2', 'key_3'], $collection->getKeys());
+    }
+
+    public function getValues(): void
+    {
+        $expected = $this->getFirstThreeValidValues();
+        $collection = $this->createCollectionWithElements($expected);
+        $this->assertSame($expected, $collection->getValues());
+
+        $collection = $this->createCollectionWithElements([
+            'key_1' => $this->getFirstValidValue(),
+            'key_2' => $this->getSecondValidValue(),
+            'key_3' => $this->getThirdValidValue(),
+        ]);
+        $expected = [
+            0 => $this->getFirstValidValue(),
+            1 => $this->getSecondValidValue(),
+            2 => $this->getThirdValidValue(),
+        ];
+        $this->assertSame(['key_1', 'key_2', 'key_3'], $collection->getKeys());
+        $this->assertSame($expected, $collection->getValues());
+    }
+
+    public function testSlice(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+
+        $this->assertSame($this->getFirstValidValue(), $collection->first());
+        $result = $collection->slice(1);
+        $this->assertSame($this->getSecondValidValue(), $result->first());
+    }
+
+    public function testGetOneBy(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $result = $collection->getOneBy(function ($value) {
+            return $this->getFirstValidValue() === $value;
+        });
+
+        $this->assertSame($this->getFirstValidValue(), $result);
+    }
+
+    public function testGetOneByWithNoResults(): void
+    {
+        $collection = $this->createCollectionWithElements([$this->getSecondValidValue()]);
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(\sprintf('Exactly 1 result is expected in "%s", but none were found.', $this->getCollectionClass()));
+        $collection->getOneBy(function ($value) {
+            return $this->getFirstValidValue() === $value;
+        });
+    }
+
+    public function testGetOneOrNullBy(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $result = $collection->getOneBy(function ($value) {
+            return $this->getFirstValidValue() === $value;
+        });
+
+        $this->assertSame($this->getFirstValidValue(), $result);
+    }
+
+    public function testGetOneOrNullByWithNoResults(): void
+    {
+        $collection = $this->createCollectionWithElements([$this->getSecondValidValue()]);
+        $result = $collection->getOneOrNullBy(function ($value) {
+            return $this->getFirstValidValue() === $value;
+        });
+
+        $this->assertNull($result);
+    }
+
     /**
      * @see https://github.com/aeviiq/collection/issues/32
      *
@@ -233,8 +326,6 @@ abstract class CollectionTestCase extends TestCase
     }
 
     abstract public function testMap(): void;
-
-    abstract public function testFilter(): void;
 
     /**
      * @return mixed[]
