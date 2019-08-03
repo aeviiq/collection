@@ -26,7 +26,7 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 
     public static function expectedInstance(object $subject, string $expected, string $givenType): InvalidArgumentException
     {
-        return new static(\sprintf('"%s" only allows elements of that are an instanceof "%s", "%s" given.', \get_class($subject), $expected, $givenType));
+        return new static(\sprintf('"%s" only allows elements that are an instance of "%s", "%s" given.', \get_class($subject), $expected, $givenType));
     }
 
     private static function createExpectedTypeException(object $subject, string $givenType, string $type): InvalidArgumentException
