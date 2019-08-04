@@ -103,6 +103,7 @@ abstract class CollectionTestCase extends TestCase
     {
         $expected = $this->getFirstThreeValidValues();
         $collection = $this->createCollectionWithElements($expected);
+        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $collection->toArray());
     }
 
@@ -189,7 +190,8 @@ abstract class CollectionTestCase extends TestCase
         $expected2 = $this->getLastThreeValidValues();
         $collection = $this->createCollectionWithElements($expected1);
         $collection->merge($expected2);
-        $this->assertSame(\array_merge($expected1, $expected2), $collection->toArray());
+        $expected = $this->prepareExpectedResult(\array_merge($expected1, $expected2));
+        $this->assertSame($expected, $collection->toArray());
     }
 
     /**
