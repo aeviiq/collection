@@ -15,10 +15,8 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
         int $flags = \ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS,
         string $iteratorClass = \ArrayIterator::class
     ) {
-        parent::__construct([], $flags, $iteratorClass);
-        foreach ($elements as $key => $element) {
-            $this->offsetSet($key, $element);
-        }
+        $this->validateArray($elements);
+        parent::__construct($elements, $flags, $iteratorClass);
     }
 
     /**
