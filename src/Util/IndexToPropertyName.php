@@ -15,11 +15,11 @@ final class IndexToPropertyName
      *
      * @return string That is a valid property name. (@see https://www.php.net/manual/en/language.variables.basics.php)
      */
-    public static function forSingle($input, array $existingIndexes = [], bool $unique = false): string
+    public static function forSingle($input, array $existingIndexes = []): string
     {
         $existingIndexes = \array_flip($existingIndexes);
         if (\is_string($input) && \ctype_alnum(\str_replace(static::PROPERTY_PREFIX, '', $input))) {
-            if (!$unique) {
+            if (empty($existingIndexes)) {
                 return $input;
             }
 
@@ -38,7 +38,7 @@ final class IndexToPropertyName
 
         if (\is_int($input) && $input >= 0) {
             $index = static::PROPERTY_PREFIX . $input;
-            if (!$unique) {
+            if (empty($existingIndexes)) {
                 return $index;
             }
 
@@ -62,8 +62,10 @@ final class IndexToPropertyName
     {
         $result = [];
         foreach ($elements as $index => $value) {
-            $propertyName = static::forSingle($index, $existingIndexes, $unique);
-            $existingIndexes[] = $propertyName;
+            $propertyName = static::forSingle($index, $existingIndexes);
+            if ($unique) {
+                $existingIndexes[] = $propertyName;
+            }
             $result[$propertyName] = $value;
         }
 

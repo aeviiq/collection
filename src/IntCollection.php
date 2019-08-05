@@ -14,7 +14,7 @@ final class IntCollection extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): void
+    protected function validateElement($value): void
     {
         if (!\is_int($value)) {
             throw InvalidArgumentException::expectedInt($this, \gettype($value));

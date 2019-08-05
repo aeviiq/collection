@@ -14,7 +14,7 @@ final class StringCollection extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): void
+    protected function validateElement($value): void
     {
         if (!\is_string($value)) {
             throw InvalidArgumentException::expectedString($this, \gettype($value));
