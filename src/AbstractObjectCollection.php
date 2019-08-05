@@ -3,102 +3,122 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Exception\LogicException;
 use Aeviiq\Collection\Util\IndexToPropertyName;
+use ArrayObject;
 
-/**
- * @method \ArrayIterator|object[] getIterator
- * @method object|null first
- * @method object|null last
- */
 abstract class AbstractObjectCollection extends AbstractCollection
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(
-        array $elements = [],
-        string $iteratorClass = \ArrayIterator::class
-    ) {
-        // We hardcode the flags here to prevent bugs that could occur when reflection is used on these collections.
-        // For a more detailed explanation see https://github.com/aeviiq/collection/issues/19
-        // The flags can still be changed using the setFlags() method, although this is not recommended.
-        parent::__construct(IndexToPropertyName::forMultiple($elements), \ArrayObject::ARRAY_AS_PROPS, $iteratorClass);
-    }
-
-    /**
-     * @return CollectionInterface|static
-     */
-    public function exchangeArray($input): CollectionInterface
+    public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
-        return parent::exchangeArray(IndexToPropertyName::forMultiple($input));
+        parent::__construct(IndexToPropertyName::forMultiple($elements), $iteratorClass);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function offsetSet($index, $value): void
+    public function natcasesort(): void
     {
-        if (null === $index) {
-            parent::offsetSet(IndexToPropertyName::forSingle($index, $this->getKeys(), true), $value);
-
-            return;
-        }
-
-        parent::offsetSet(IndexToPropertyName::forSingle($index), $value);
+        $this->throwExceptionIfToStringDoesNotExists();
+        parent::natcasesort();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function offsetExists($index): bool
+    public function natsort(): void
     {
-        return parent::offsetExists(IndexToPropertyName::forSingle($index));
+        $this->throwExceptionIfToStringDoesNotExists();
+        parent::natsort();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function offsetUnset($index): void
+    public function exchangeArray(array $elements): void
     {
-        parent::offsetUnset(IndexToPropertyName::forSingle($index));
+        parent::exchangeArray(IndexToPropertyName::forMultiple($elements));
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function offsetGet($index)
+    public function append($element): void
     {
-        return parent::offsetGet(IndexToPropertyName::forSingle($index));
+        $this->validateElement($element);
+        $index = IndexToPropertyName::forSingle(null, $this->getKeys());
+        $this->offsetSet($index, $element);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    protected function validateValue($value): void
+    public function offsetExists($offset): bool
     {
-        if (!\is_object($value)) {
-            throw InvalidArgumentException::expectedObject($this, \gettype($value));
-        }
-
-        $allowedInstance = $this->allowedInstance();
-        if (!($value instanceof $allowedInstance)) {
-            throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($value));
-        }
+        return parent::offsetExists(IndexToPropertyName::forSingle($offset));
     }
 
     /**
-     * @return string The allowed object instance the ObjectCollection supports.
+     * {@inheritDoc}
+     */
+    public function offsetGet($offset)
+    {
+        parent::offsetGet(IndexToPropertyName::forSingle($offset));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetSet($offset, $element): void
+    {
+        parent::offsetSet(IndexToPropertyName::forSingle($offset), $element);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetUnset($offset): void
+    {
+        parent::offsetUnset(IndexToPropertyName::forSingle($offset));
+    }
+
+    /**
+     * @return string The allowed class instance this collection supports.
      */
     abstract protected function allowedInstance(): string;
 
     /**
-     * @return CollectionInterface|static
+     * {@inheritDoc}
      */
-    protected function createFrom(array $elements): CollectionInterface
+    protected function validateElement($element): void
     {
-        $instance = new static($elements, $this->getIteratorClass());
-        $instance->setFlags($this->getFlags());
+        if (!\is_object($element)) {
+            throw InvalidArgumentException::expectedObject($this, \gettype($element));
+        }
 
-        return $instance;
+        $allowedInstance = $this->allowedInstance();
+        if (!($element instanceof $allowedInstance)) {
+            throw InvalidArgumentException::expectedInstance($this, $allowedInstance, \get_class($element));
+        }
+    }
+
+    /**
+     * @param mixed[] $elements
+     * @param string  $iteratorClass
+     */
+    protected function createStorage(array $elements, string $iteratorClass): \ArrayObject
+    {
+        return new \ArrayObject($elements, ArrayObject::ARRAY_AS_PROPS, $iteratorClass);
+    }
+
+    /**
+     * @throws LogicException
+     */
+    protected function throwExceptionIfToStringDoesNotExists(): void
+    {
+        $class = $this->allowedInstance();
+        if (!(new \ReflectionClass($class))->hasMethod('__toString')) {
+            throw new LogicException(\sprintf('"%s" must implement __toString() in order to natsort().', $class));
+        }
     }
 }

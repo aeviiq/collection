@@ -5,50 +5,86 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
 
-abstract class AbstractCollection extends \ArrayObject implements CollectionInterface
+abstract class AbstractCollection implements CollectionInterface
 {
     /**
-     * {@inheritdoc}
+     * @var \ArrayObject
      */
-    public function __construct(
-        array $elements = [],
-        int $flags = \ArrayObject::STD_PROP_LIST | \ArrayObject::ARRAY_AS_PROPS,
-        string $iteratorClass = \ArrayIterator::class
-    ) {
-        $this->validateArray($elements);
-        parent::__construct($elements, $flags, $iteratorClass);
-    }
+    private $storage;
 
     /**
-     * @return CollectionInterface|static
+     * @param mixed[] $elements
+     * @param string  $iteratorClass
      */
-    public function exchangeArray($input): CollectionInterface
+    public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
-        $this->validateArray($input);
-
-        return $this->createFrom(parent::exchangeArray($input));
+        $this->validateElements($elements);
+        $this->storage = $this->createStorage($elements, $iteratorClass);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function offsetSet($index, $value): void
+    public function first()
     {
-        $this->validateValue($value);
+        $elements = $this->storage->getArrayCopy();
 
-        parent::offsetSet($index, $value);
+        return \array_shift($elements);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function last()
+    {
+        $elements = $this->toArray();
+        $last = \end($elements);
+        if (false === $last) {
+            return null;
+        }
+
+        return $last;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function remove($element): void
+    {
+        $key = \array_search($element, $this->toArray(), true);
+        if (false === $key) {
+            return;
+        }
+
+        $this->offsetUnset($key);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function toArray(): array
     {
-        return $this->getArrayCopy();
+        return $this->storage->getArrayCopy();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function map(\Closure $closure): array
+    {
+        return \array_map($closure, $this->toArray());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function filter(\Closure $closure): CollectionInterface
+    {
+        return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function merge($input): void
     {
@@ -68,7 +104,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isEmpty(): bool
     {
@@ -76,7 +112,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function contains($element): bool
     {
@@ -84,15 +120,15 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function clear(): void
     {
-        $this->exchangeArray([]);
+        $this->storage->exchangeArray([]);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getKeys(): array
     {
@@ -100,7 +136,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getValues(): array
     {
@@ -108,7 +144,7 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(int $offset, ?int $length = null): CollectionInterface
     {
@@ -116,118 +152,184 @@ abstract class AbstractCollection extends \ArrayObject implements CollectionInte
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function first()
-    {
-        $elements = $this->toArray();
-        return \array_shift($elements);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function last()
-    {
-        $elements = $this->toArray();
-        $last = \end($elements);
-        if (false === $last) {
-            return null;
-        }
-
-        return $last;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function remove($element): void
-    {
-        $key = \array_search($element, $this->toArray(), true);
-        if (false === $key) {
-            return;
-        }
-        $this->offsetUnset($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function map(\Closure $closure): array
-    {
-        return \array_map($closure, $this->toArray());
-    }
-
-    /**
-     * @return static|CollectionInterface
-     */
-    public function filter(\Closure $closure): CollectionInterface
-    {
-        return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
-    }
-
-    /**
-     * @see https://github.com/aeviiq/collection/issues/32
-     *
-     * {@inheritdoc}
-     */
-    public function getIterator(): \Traversable
-    {
-        $iterator = $this->getIteratorClass();
-        return new $iterator($this->toArray());
-    }
-
-    /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOneBy(\Closure $closure)
     {
         $result = $this->getOneOrNullBy($closure);
         if (null === $result) {
-            throw LogicException::oneResultExpected(static::class);
+            throw new LogicException('No results found, one expected.');
         }
 
         return $result;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOneOrNullBy(\Closure $closure)
     {
         $filteredResult = $this->filter($closure);
 
         if ($filteredResult->count() > 1) {
-            throw LogicException::oneOrNullResultExpected(static::class);
+            throw new LogicException('Multiple results found, one or null expected.');
         }
 
         return $filteredResult->first();
     }
 
     /**
-     * @param mixed $value
-     *
-     * @throws InvalidArgumentException Thrown when the given values are not of the expected type.
+     * {@inheritDoc}
      */
-    abstract protected function validateValue($value): void;
+    public function exchangeArray(array $elements): void
+    {
+        $this->validateElements($elements);
+        $this->storage->exchangeArray($elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIterator()
+    {
+        $iteratorClass = $this->storage->getIteratorClass();
+
+        return new $iteratorClass($this->toArray());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function append($element): void
+    {
+        $this->validateElement($element);
+        $this->storage->append($element);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetExists($offset): bool
+    {
+        return $this->storage->offsetExists($offset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetGet($offset)
+    {
+        $this->storage->offsetGet($offset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetSet($offset, $element): void
+    {
+        $this->validateElement($element);
+        $this->storage->offsetSet($offset, $element);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function offsetUnset($offset): void
+    {
+        $this->storage->offsetUnset($offset);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count(): int
+    {
+        return $this->storage->count();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function asort(): void
+    {
+        $this->storage->asort();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function ksort(): void
+    {
+        $this->storage->ksort();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function natcasesort(): void
+    {
+        $this->storage->natcasesort();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function natsort(): void
+    {
+        $this->storage->natsort();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function uasort(callable $func): void
+    {
+        $this->storage->uasort($func);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function uksort(callable $func): void
+    {
+        $this->storage->uksort($func);
+    }
+
+    /**
+     * @param mixed $element
+     *
+     * @throws InvalidArgumentException When the given element is not of the expected type.
+     */
+    abstract protected function validateElement($element): void;
 
     /**
      * @param mixed[] $elements
+     * @param string  $iteratorClass
      */
-    protected function validateArray(array $elements): void
+    protected function createStorage(array $elements, string $iteratorClass): \ArrayObject
     {
-        foreach ($elements as $element) {
-            $this->validateValue($element);
-        }
+        return new \ArrayObject($elements, 0, $iteratorClass);
     }
 
     /**
      * @param mixed[] $elements
      *
-     * @return CollectionInterface|static
+     * @return \AbstractCollection
      */
-    protected function createFrom(array $elements): CollectionInterface
+    protected function createFrom(array $elements): self
     {
-        return new static($elements, $this->getFlags(), $this->getIteratorClass());
+        return new static($elements, $this->storage->getIteratorClass());
+    }
+
+    /**
+     * @param mixed[] $elements
+     *
+     * @throws InvalidArgumentException When one of the given elements is not of the expected type.
+     */
+    protected function validateElements(array $elements): void
+    {
+        foreach ($elements as $element) {
+            $this->validateElement($element);
+        }
     }
 }
