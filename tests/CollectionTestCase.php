@@ -79,11 +79,9 @@ abstract class CollectionTestCase extends TestCase
         $expectedPrevious = $this->getFirstThreeValidValues();
         $expectedCurrent = $this->getLastThreeValidValues();
         $collection = $this->createCollectionWithElements($expectedPrevious);
-        $previous = $collection->exchangeArray($expectedCurrent);
-        $this->assertSame($expectedPrevious, $previous->toArray());
+        $collection->exchangeArray($expectedCurrent);
         $this->assertNotSame($expectedPrevious, $collection->toArray());
         $this->assertSame($expectedCurrent, $collection->toArray());
-        $this->assertNotSame($expectedCurrent, $previous->toArray());
     }
 
     /**
@@ -303,9 +301,19 @@ abstract class CollectionTestCase extends TestCase
     {
         $collection = $this->createCollectionWithElements([$this->getSecondValidValue()]);
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage(\sprintf('Exactly 1 result is expected in "%s", but none were found.', $this->getCollectionClass()));
+        $this->expectExceptionMessage('No results found, one expected.');
         $collection->getOneBy(function ($value) {
             return $this->getFirstValidValue() === $value;
+        });
+    }
+
+    public function testGetOneByWithMultipleResults(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Multiple results found, one or null expected.');
+        $collection->getOneBy(function ($value) {
+            return $this->getFirstValidValue() === $value || $this->getSecondValidValue() === $value;
         });
     }
 
@@ -327,6 +335,16 @@ abstract class CollectionTestCase extends TestCase
         });
 
         $this->assertNull($result);
+    }
+
+    public function testGetOneOrNullByWithMultipleResults(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Multiple results found, one or null expected.');
+        $collection->getOneOrNullBy(function ($value) {
+            return $this->getFirstValidValue() === $value || $this->getSecondValidValue() === $value;
+        });
     }
 
     /**
