@@ -3,6 +3,7 @@
 namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\Util\IndexToPropertyName;
 
 /**
  * @method \ArrayIterator|object[] getIterator
@@ -21,58 +22,59 @@ abstract class AbstractObjectCollection extends AbstractCollection
         // We hardcode the flags here to prevent bugs that could occur when reflection is used on these collections.
         // For a more detailed explanation see https://github.com/aeviiq/collection/issues/19
         // The flags can still be changed using the setFlags() method, although this is not recommended.
-        parent::__construct($elements, \ArrayObject::ARRAY_AS_PROPS, $iteratorClass);
+        parent::__construct(IndexToPropertyName::forMultiple($elements), \ArrayObject::ARRAY_AS_PROPS, $iteratorClass);
     }
 
     /**
      * @return CollectionInterface|static
      */
-    final public function exchangeArray($input): CollectionInterface
+    public function exchangeArray($input): CollectionInterface
     {
-        $newInput = [];
-        foreach ($input as $index => $value) {
-            $newInput[$this->createValidIndex($index, true)] = $value;
+        return parent::exchangeArray(IndexToPropertyName::forMultiple($input));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($index, $value): void
+    {
+        if (null === $index) {
+            parent::offsetSet(IndexToPropertyName::forSingle($index, $this->getKeys(), true), $value);
+
+            return;
         }
 
-        return parent::exchangeArray($newInput);
+        parent::offsetSet(IndexToPropertyName::forSingle($index), $value);
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function offsetSet($index, $value): void
+    public function offsetExists($index): bool
     {
-        parent::offsetSet($this->createValidIndex($index, true), $value);
+        return parent::offsetExists(IndexToPropertyName::forSingle($index));
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function offsetExists($index): bool
+    public function offsetUnset($index): void
     {
-        return parent::offsetExists($this->createValidIndex($index));
+        parent::offsetUnset(IndexToPropertyName::forSingle($index));
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function offsetUnset($index): void
+    public function offsetGet($index)
     {
-        parent::offsetUnset($this->createValidIndex($index));
+        return parent::offsetGet(IndexToPropertyName::forSingle($index));
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function offsetGet($index)
-    {
-        return parent::offsetGet($this->createValidIndex($index));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final protected function validateValue($value): void
+    protected function validateValue($value): void
     {
         if (!\is_object($value)) {
             throw InvalidArgumentException::expectedObject($this, \gettype($value));
@@ -88,38 +90,6 @@ abstract class AbstractObjectCollection extends AbstractCollection
      * @return string The allowed object instance the ObjectCollection supports.
      */
     abstract protected function allowedInstance(): string;
-
-    /**
-     * @param mixed $index
-     * @param mixed $value
-     *
-     * @return string|int The index key which is valid depending on the setFlags.
-     */
-    protected function createValidIndex($index, bool $unique = false)
-    {
-        if (\ArrayObject::ARRAY_AS_PROPS !== ($this->getFlags() & \ArrayObject::ARRAY_AS_PROPS)) {
-            return $index;
-        }
-
-        if (null === $index) {
-            $index = 0;
-        }
-
-        if (!\is_numeric($index)) {
-            return $index;
-        }
-
-        $newIndex = '_' . $index;
-        if (!$unique) {
-            return $newIndex;
-        }
-
-        while (isset($this->toArray()[$newIndex])) {
-            $newIndex = '_' . $index++;
-        }
-
-        return $newIndex;
-    }
 
     /**
      * @return CollectionInterface|static

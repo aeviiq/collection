@@ -3,7 +3,7 @@
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractObjectCollection;
-use Aeviiq\Collection\Util\IndexGenerator;
+use Aeviiq\Collection\Util\IndexToPropertyName;
 
 final class ObjectCollectionTest extends CollectionTestCase
 {
@@ -161,10 +161,10 @@ final class ObjectCollectionTest extends CollectionTestCase
     protected function prepareExpectedResult($expectedResult)
     {
         if (\is_array($expectedResult)) {
-            return IndexGenerator::createUniqueValidIndexesForArray($expectedResult, []);
+            return IndexToPropertyName::forMultiple($expectedResult, []);
         }
 
-        return IndexGenerator::createValidIndex($expectedResult);
+        return IndexToPropertyName::forSingle($expectedResult);
     }
 
     protected function createExpectedInvalidArgumentExceptionMessage($value): string
