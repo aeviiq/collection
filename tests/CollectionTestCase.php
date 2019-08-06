@@ -210,7 +210,7 @@ abstract class CollectionTestCase extends TestCase
     {
         $collection = $this->createEmptyCollection();
         $this->assertTrue($collection->isEmpty());
-        $collection->append($this->getFirstValidValue());
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
         $this->assertFalse($collection->isEmpty());
     }
 
@@ -219,7 +219,7 @@ abstract class CollectionTestCase extends TestCase
         $collection = $this->createCollectionWithElements([$this->getFirstValidValue()]);
         $this->assertTrue($collection->contains($this->getFirstValidValue()));
         $this->assertFalse($collection->contains($this->getSecondValidValue()));
-        $collection->append($this->getSecondValidValue());
+        $collection = $this->createCollectionWithElements([$this->getFirstValidValue(), $this->getSecondValidValue()]);
         $this->assertTrue($collection->contains($this->getSecondValidValue()));
     }
 

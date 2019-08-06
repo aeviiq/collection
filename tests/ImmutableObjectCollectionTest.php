@@ -2,10 +2,10 @@
 
 namespace Aeviiq\Collection\Tests;
 
-use Aeviiq\Collection\AbstractObjectCollection;
+use Aeviiq\Collection\AbstractImmutableObjectCollection;
 use Aeviiq\Collection\Util\IndexToPropertyName;
 
-final class ObjectCollectionTest extends CollectionTestCase
+final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
 {
     /**
      * @var \IteratorAggregate
@@ -191,9 +191,9 @@ final class ObjectCollectionTest extends CollectionTestCase
         $this->sixthSubject = $this->createSubject();
     }
 
-    private function createCollection(array $items = []): AbstractObjectCollection
+    private function createCollection(array $items = []): AbstractImmutableObjectCollection
     {
-        return new class($items) extends AbstractObjectCollection
+        return new class($items) extends AbstractImmutableObjectCollection
         {
             protected function allowedInstance(): string
             {

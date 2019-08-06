@@ -46,7 +46,7 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
      * Merges the input with the collection. This can take an array with valid values or
      * an instance of the collection itself.
      *
-     * @param mixed[] $input
+     * @param mixed[]|CollectionInterface $input
      *
      * @throws InvalidArgumentException When the $input is not of the expected type(s).
      */
