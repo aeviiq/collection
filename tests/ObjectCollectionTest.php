@@ -75,7 +75,7 @@ final class ObjectCollectionTest extends CollectionTestCase
 
     protected function getCollectionClass(): string
     {
-        return \get_class($this->createMockedCollection());
+        return \get_class($this->createCollection());
     }
 
     /**
@@ -136,11 +136,11 @@ final class ObjectCollectionTest extends CollectionTestCase
      */
     protected function getFirstThreeValidValues(): array
     {
-        return [
-            '_0' => $this->getFirstValidValue(),
-            '_1' => $this->getSecondValidValue(),
-            '_2' => $this->getThirdValidValue(),
-        ];
+        return IndexToPropertyName::forMultiple([
+            $this->getFirstValidValue(),
+            $this->getSecondValidValue(),
+            $this->getThirdValidValue(),
+        ]);
     }
 
     /**
@@ -148,11 +148,11 @@ final class ObjectCollectionTest extends CollectionTestCase
      */
     protected function getLastThreeValidValues(): array
     {
-        return [
-            '_3' => $this->getForthValidValue(),
-            '_4' => $this->getFifthValidValue(),
-            '_5' => $this->getSixthValidValue(),
-        ];
+        return IndexToPropertyName::forMultiple([
+            $this->getForthValidValue(),
+            $this->getFifthValidValue(),
+            $this->getSixthValidValue(),
+        ]);
     }
 
     /**
@@ -161,7 +161,7 @@ final class ObjectCollectionTest extends CollectionTestCase
     protected function prepareExpectedResult($expectedResult)
     {
         if (\is_array($expectedResult)) {
-            return IndexToPropertyName::forMultiple($expectedResult, []);
+            return IndexToPropertyName::forMultiple($expectedResult);
         }
 
         return IndexToPropertyName::forSingle($expectedResult);
@@ -191,7 +191,7 @@ final class ObjectCollectionTest extends CollectionTestCase
         $this->sixthSubject = $this->createSubject();
     }
 
-    private function createMockedCollection(array $items = []): AbstractObjectCollection
+    private function createCollection(array $items = []): AbstractObjectCollection
     {
         return new class($items) extends AbstractObjectCollection
         {

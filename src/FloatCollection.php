@@ -14,10 +14,10 @@ final class FloatCollection extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function validateElement($value): void
+    protected function validateElement($element): void
     {
-        if (!\is_float($value)) {
-            throw InvalidArgumentException::expectedFloat($this, \gettype($value));
+        if (!\is_float($element)) {
+            throw InvalidArgumentException::expectedFloat($this, \gettype($element));
         }
     }
 }

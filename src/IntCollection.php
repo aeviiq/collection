@@ -14,10 +14,10 @@ final class IntCollection extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function validateElement($value): void
+    protected function validateElement($element): void
     {
-        if (!\is_int($value)) {
-            throw InvalidArgumentException::expectedInt($this, \gettype($value));
+        if (!\is_int($element)) {
+            throw InvalidArgumentException::expectedInt($this, \gettype($element));
         }
     }
 }

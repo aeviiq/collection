@@ -14,10 +14,10 @@ final class StringCollection extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function validateElement($value): void
+    protected function validateElement($element): void
     {
-        if (!\is_string($value)) {
-            throw InvalidArgumentException::expectedString($this, \gettype($value));
+        if (!\is_string($element)) {
+            throw InvalidArgumentException::expectedString($this, \gettype($element));
         }
     }
 }

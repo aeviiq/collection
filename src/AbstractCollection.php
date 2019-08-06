@@ -313,8 +313,6 @@ abstract class AbstractCollection implements CollectionInterface
 
     /**
      * @param mixed[] $elements
-     *
-     * @return \AbstractCollection
      */
     protected function createFrom(array $elements): self
     {
