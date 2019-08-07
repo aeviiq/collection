@@ -3,7 +3,6 @@
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractObjectCollection;
-use Aeviiq\Collection\Util\IndexToPropertyName;
 
 final class ObjectCollectionTest extends CollectionTestCase
 {
@@ -136,11 +135,11 @@ final class ObjectCollectionTest extends CollectionTestCase
      */
     protected function getFirstThreeValidValues(): array
     {
-        return IndexToPropertyName::forMultiple([
-            $this->getFirstValidValue(),
-            $this->getSecondValidValue(),
-            $this->getThirdValidValue(),
-        ]);
+        return [
+            '_0' => $this->getFirstValidValue(),
+            '_1' => $this->getSecondValidValue(),
+            '_2' => $this->getThirdValidValue(),
+        ];
     }
 
     /**
@@ -148,11 +147,11 @@ final class ObjectCollectionTest extends CollectionTestCase
      */
     protected function getLastThreeValidValues(): array
     {
-        return IndexToPropertyName::forMultiple([
-            $this->getForthValidValue(),
-            $this->getFifthValidValue(),
-            $this->getSixthValidValue(),
-        ]);
+        return [
+            '_3' => $this->getForthValidValue(),
+            '_4' => $this->getFifthValidValue(),
+            '_5' => $this->getSixthValidValue(),
+        ];
     }
 
     /**
@@ -161,10 +160,14 @@ final class ObjectCollectionTest extends CollectionTestCase
     protected function prepareExpectedResult($expectedResult)
     {
         if (\is_array($expectedResult)) {
-            return IndexToPropertyName::forMultiple($expectedResult);
+            $result = [];
+            foreach ($expectedResult as $index => $element) {
+                $result[\is_string($index) ? $index : '_' . $index] = $element;
+            }
+            return $result;
         }
 
-        return IndexToPropertyName::forSingle($expectedResult);
+        return \is_string($expectedResult) ? $expectedResult : '_' . $expectedResult;
     }
 
     protected function createExpectedInvalidArgumentExceptionMessage($value): string

@@ -18,11 +18,6 @@ composer require aeviiq/collection
  */
 final class FooCollection extends AbstractObjectCollection
 {
-    protected function allowedInstance(): string
-    {
-        return Foo::class;
-    }
-    
     public function filterReleasedBefore(\DateTimeInterface $dateTime): FooCollection
     {
         return $this->filter(static function (Foo $foo) use ($dateTime): bool {
@@ -36,6 +31,11 @@ final class FooCollection extends AbstractObjectCollection
             return $foo->isActive();
         });
     }
+    
+    protected function allowedInstance(): string
+        {
+            return Foo::class;
+        }
 }
 ```
 

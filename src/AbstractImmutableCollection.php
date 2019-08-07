@@ -9,7 +9,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function remove($element): void
+    final public function remove($element): void
     {
         $this->throwBadMethodCallException();
     }
@@ -17,7 +17,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function merge($input): void
+    final public function merge($input): void
     {
         $this->throwBadMethodCallException();
     }
@@ -25,7 +25,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function clear(): void
+    final public function clear(): void
     {
         $this->throwBadMethodCallException();
     }
@@ -33,7 +33,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function exchangeArray(array $elements): void
+    final public function exchangeArray(array $elements): void
     {
         $this->throwBadMethodCallException();
     }
@@ -41,7 +41,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function append($element): void
+    final public function append($element): void
     {
         $this->throwBadMethodCallException();
     }
@@ -49,7 +49,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function offsetSet($offset, $element): void
+    final public function offsetSet($offset, $element): void
     {
         $this->throwBadMethodCallException();
     }
@@ -57,7 +57,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
     /**
      * {@inheritDoc}
      */
-    public function offsetUnset($offset): void
+    final public function offsetUnset($offset): void
     {
         $this->throwBadMethodCallException();
     }
