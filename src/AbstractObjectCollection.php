@@ -4,14 +4,15 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
-use Aeviiq\Collection\Util\IndexToPropertyName;
 use ArrayObject;
 
 abstract class AbstractObjectCollection extends AbstractCollection
 {
+    protected const PROPERTY_NAME_PREFIX = '_';
+
     public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
-        parent::__construct(IndexToPropertyName::forMultiple($elements), $iteratorClass);
+        parent::__construct($this->indexToPropertyNameForArray($elements), $iteratorClass);
     }
 
     /**
@@ -37,7 +38,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     public function exchangeArray(array $elements): void
     {
-        parent::exchangeArray(IndexToPropertyName::forMultiple($elements));
+        parent::exchangeArray($this->indexToPropertyNameForArray($elements));
     }
 
     /**
@@ -46,7 +47,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
     public function append($element): void
     {
         $this->validateElement($element);
-        $index = IndexToPropertyName::forSingle(null, $this->getKeys());
+        $index = $this->indexToPropertyName(null, $this->getKeys());
         $this->offsetSet($index, $element);
     }
 
@@ -55,7 +56,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     public function offsetExists($offset): bool
     {
-        return parent::offsetExists(IndexToPropertyName::forSingle($offset));
+        return parent::offsetExists($this->indexToPropertyName($offset));
     }
 
     /**
@@ -63,7 +64,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     public function offsetGet($offset)
     {
-        parent::offsetGet(IndexToPropertyName::forSingle($offset));
+        parent::offsetGet($this->indexToPropertyName($offset));
     }
 
     /**
@@ -71,7 +72,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     public function offsetSet($offset, $element): void
     {
-        parent::offsetSet(IndexToPropertyName::forSingle($offset), $element);
+        parent::offsetSet($this->indexToPropertyName($offset), $element);
     }
 
     /**
@@ -79,7 +80,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
      */
     public function offsetUnset($offset): void
     {
-        parent::offsetUnset(IndexToPropertyName::forSingle($offset));
+        parent::offsetUnset($this->indexToPropertyName($offset));
     }
 
     /**
@@ -120,5 +121,63 @@ abstract class AbstractObjectCollection extends AbstractCollection
         if (!(new \ReflectionClass($class))->hasMethod('__toString')) {
             throw new LogicException(\sprintf('"%s" must implement __toString() in order to natsort().', $class));
         }
+    }
+
+    /**
+     * @param array $elements
+     *
+     * @return mixed[] Containing indexes which are valid property names. (@see https://www.php.net/manual/en/language.variables.basics.php)
+     */
+    protected function indexToPropertyNameForArray(array $elements): array
+    {
+        $result = [];
+        foreach ($elements as $index => $element) {
+            $result[$this->indexToPropertyName($index)] = $element;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int|string $input
+     * @param mixed[]    $existingIndexes
+     *
+     * @return string That is a valid property name. (@see https://www.php.net/manual/en/language.variables.basics.php)
+     */
+    protected function indexToPropertyName($input, array $existingIndexes = []): string
+    {
+        $existingIndexes = \array_flip($existingIndexes);
+        if (\is_string($input) && \ctype_alnum(\str_replace(static::PROPERTY_NAME_PREFIX, '', $input))) {
+            if (empty($existingIndexes)) {
+                return $input;
+            }
+
+            $i = 0;
+            $index = $input . $i;
+            while (isset($existingIndexes[$index])) {
+                $index = $input . ++$i;
+            }
+
+            return $index;
+        }
+
+        if (null === $input) {
+            $input = 0;
+        }
+
+        if (\is_int($input) && $input >= 0) {
+            $index = static::PROPERTY_NAME_PREFIX . $input;
+            if (empty($existingIndexes)) {
+                return $index;
+            }
+
+            while (isset($existingIndexes[$index])) {
+                $index = static::PROPERTY_NAME_PREFIX . ++$input;
+            }
+
+            return $index;
+        }
+
+        throw new InvalidArgumentException(\sprintf('A property name must be an alphanumeric string or an integer >= 0. "%s" given.', $input));
     }
 }
