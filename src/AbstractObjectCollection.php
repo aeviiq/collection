@@ -12,7 +12,7 @@ abstract class AbstractObjectCollection extends AbstractCollection
 
     public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
-        parent::__construct($this->indexToPropertyNameForArray($elements), $iteratorClass);
+//        parent::__construct($this->indexToPropertyNameForArray($elements), $iteratorClass);
     }
 
     /**
