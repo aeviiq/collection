@@ -77,14 +77,16 @@ abstract class AbstractObjectCollection extends AbstractCollection
     }
 
     /**
+     * Allows you to suppress the logic exception that could be thrown when cloning an object collection with invalid keys.
+     * When invalid keys are used, this could cause referential bugs because of how SPL ArrayObject handles the ARRAY_AS_PROPS
+     * option in combination with these 'invalig' keys. When deep cloning this collection, the object elements that have an
+     * invalid key will *not* be detected, causing unexpected results.
+     *
+     * It is not recommended to suppress this error, but instead, use valid keys when (deep) cloning this collection.
+     *
      * @see https://github.com/aeviiq/collection/issues/19
      *
-     * @return bool Whether or not an exception should be thrown when this collection is getting
-     *              cloned and has invalid property names. When invalid keys are used, this
-     *              could cause referential bugs because of how PHP ArrayObject handles the ARRAY_AS_PROPS
-     *              option in combination with 'invalid' keys. Using any deep clone, the object elements
-     *              inside the storage will *not* be detected and be ignore. This could cause unexpected
-     *              results and bugs.
+     * @return bool Whether or not an exception should be thrown when 'invalid' keys are present when cloning.
      */
     protected function suppressDeepCloneValidation(): bool
     {
