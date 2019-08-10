@@ -13,7 +13,6 @@ final class FloatCollectionTest extends CollectionTestCase
             return (string)$value;
         });
         $expected = ['1.1', '2.2', '3.3'];
-        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $result);
     }
 

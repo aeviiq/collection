@@ -13,7 +13,6 @@ final class StringCollectionTest extends CollectionTestCase
             return $value . '123';
         });
         $expected = ['foo123', 'bar123', 'baz123'];
-        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $result);
     }
 
