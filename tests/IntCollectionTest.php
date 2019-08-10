@@ -13,7 +13,6 @@ final class IntCollectionTest extends CollectionTestCase
             return (string)$value;
         });
         $expected = ['1', '2', '3'];
-        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $result);
     }
 

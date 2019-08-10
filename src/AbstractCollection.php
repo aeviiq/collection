@@ -88,19 +88,12 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function merge($input): void
     {
-        if (\is_array($input)) {
-            $this->exchangeArray(\array_merge($this->toArray(), $input));
-
-            return;
+        $elements = ($input instanceof static) ? $input->toArray() : $input;
+        if (!\is_array($elements)) {
+            throw new InvalidArgumentException(\sprintf('"%s" can only merge with an array or instance of itself.', static::class));
         }
 
-        if ($input instanceof static) {
-            $this->exchangeArray(\array_merge($this->toArray(), $input->toArray()));
-
-            return;
-        }
-
-        throw new InvalidArgumentException(\sprintf('"%s" can only merge with an array or instance of itself.', static::class));
+        $this->exchangeArray(\array_merge($this->toArray(), $elements));
     }
 
     /**
@@ -309,6 +302,11 @@ abstract class AbstractCollection implements CollectionInterface
     protected function createStorage(array $elements, string $iteratorClass): \ArrayObject
     {
         return new \ArrayObject($elements, 0, $iteratorClass);
+    }
+
+    protected function getStorage(): \ArrayObject
+    {
+        return $this->storage;
     }
 
     /**

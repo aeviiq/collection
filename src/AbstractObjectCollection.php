@@ -4,17 +4,9 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
-use ArrayObject;
 
 abstract class AbstractObjectCollection extends AbstractCollection
 {
-    protected const PROPERTY_NAME_PREFIX = '_';
-
-    public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
-    {
-        parent::__construct($this->indexToPropertyNameForArray($elements), $iteratorClass);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -31,56 +23,6 @@ abstract class AbstractObjectCollection extends AbstractCollection
     {
         $this->throwExceptionIfToStringDoesNotExists();
         parent::natsort();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function exchangeArray(array $elements): void
-    {
-        parent::exchangeArray($this->indexToPropertyNameForArray($elements));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function append($element): void
-    {
-        $this->validateElement($element);
-        $index = $this->indexToPropertyName(null, $this->getKeys());
-        $this->offsetSet($index, $element);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($offset): bool
-    {
-        return parent::offsetExists($this->indexToPropertyName($offset));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetGet($offset)
-    {
-        parent::offsetGet($this->indexToPropertyName($offset));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetSet($offset, $element): void
-    {
-        parent::offsetSet($this->indexToPropertyName($offset), $element);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset): void
-    {
-        parent::offsetUnset($this->indexToPropertyName($offset));
     }
 
     /**
@@ -104,15 +46,6 @@ abstract class AbstractObjectCollection extends AbstractCollection
     }
 
     /**
-     * @param mixed[] $elements
-     * @param string  $iteratorClass
-     */
-    protected function createStorage(array $elements, string $iteratorClass): \ArrayObject
-    {
-        return new \ArrayObject($elements, ArrayObject::ARRAY_AS_PROPS, $iteratorClass);
-    }
-
-    /**
      * @throws LogicException
      */
     protected function throwExceptionIfToStringDoesNotExists(): void
@@ -124,60 +57,37 @@ abstract class AbstractObjectCollection extends AbstractCollection
     }
 
     /**
-     * @param array $elements
-     *
-     * @return mixed[] Containing indexes which are valid property names. (@see https://www.php.net/manual/en/language.variables.basics.php)
+     * @see https://github.com/aeviiq/collection/issues/19
      */
-    protected function indexToPropertyNameForArray(array $elements): array
+    public function __clone()
     {
-        $result = [];
-        foreach ($elements as $index => $element) {
-            $result[$this->indexToPropertyName($index)] = $element;
+        $this->getStorage()->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+        if ($this->suppressDeepCloneValidation()) {
+            return;
         }
 
-        return $result;
+        foreach ($this->getKeys() as $key) {
+            if (!\is_string($key) || !\ctype_alnum(\str_replace('_', '', $key))) {
+                throw new LogicException(\sprintf(
+                    'In order to correctly clone an object collection, all keys must be strings that are valid property names as defined by PHP.' .
+                    ' If you are not deep cloning this collection, you could choose to suppress this exception by overriding AbstractObjectCollection#suppressDeepCloneValidation()'
+                ));
+            }
+        }
     }
 
     /**
-     * @param int|string $input
-     * @param mixed[]    $existingIndexes
+     * @see https://github.com/aeviiq/collection/issues/19
      *
-     * @return string That is a valid property name. (@see https://www.php.net/manual/en/language.variables.basics.php)
+     * @return bool Whether or not an exception should be thrown when this collection is getting
+     *              cloned and has invalid property names. When invalid keys are used, this
+     *              could cause referential bugs because of how PHP ArrayObject handles the ARRAY_AS_PROPS
+     *              option in combination with 'invalid' keys. Using any deep clone, the object elements
+     *              inside the storage will *not* be detected and be ignore. This could cause unexpected
+     *              results and bugs.
      */
-    protected function indexToPropertyName($input, array $existingIndexes = []): string
+    protected function suppressDeepCloneValidation(): bool
     {
-        $existingIndexes = \array_flip($existingIndexes);
-        if (\is_string($input) && \ctype_alnum(\str_replace(static::PROPERTY_NAME_PREFIX, '', $input))) {
-            if (empty($existingIndexes)) {
-                return $input;
-            }
-
-            $i = 0;
-            $index = $input . $i;
-            while (isset($existingIndexes[$index])) {
-                $index = $input . ++$i;
-            }
-
-            return $index;
-        }
-
-        if (null === $input) {
-            $input = 0;
-        }
-
-        if (\is_int($input) && $input >= 0) {
-            $index = static::PROPERTY_NAME_PREFIX . $input;
-            if (empty($existingIndexes)) {
-                return $index;
-            }
-
-            while (isset($existingIndexes[$index])) {
-                $index = static::PROPERTY_NAME_PREFIX . ++$input;
-            }
-
-            return $index;
-        }
-
-        throw new InvalidArgumentException(\sprintf('A property name must be an alphanumeric string or an integer >= 0. "%s" given.', $input));
+        return false;
     }
 }

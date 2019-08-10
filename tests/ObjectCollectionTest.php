@@ -3,6 +3,7 @@
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\AbstractObjectCollection;
+use Aeviiq\Collection\Exception\LogicException;
 
 final class ObjectCollectionTest extends CollectionTestCase
 {
@@ -48,8 +49,33 @@ final class ObjectCollectionTest extends CollectionTestCase
             return $value . '123';
         });
         $expected = ['Foo Bar Baz Baa123', 'Foo Bar Baz Bab123', 'Foo Bar Baz Bac123'];
-        $expected = $this->prepareExpectedResult($expected);
         $this->assertSame($expected, $result);
+    }
+
+    public function testExceptionIsThrownWhenClonedWithInvalidKeys(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('In order to correctly clone an object collection, all keys must be strings that are valid property names as defined by PHP. If you are not deep cloning this collection, you could choose to suppress this exception by overriding AbstractObjectCollection#suppressDeepCloneValidation()');
+        $result = clone $collection;
+    }
+
+    public function testExceptionIsNotThrownWithInvalidKeysIfItIsSuppressed(): void
+    {
+        $collection = new class() extends AbstractObjectCollection
+        {
+            protected function allowedInstance(): string
+            {
+                return \IteratorAggregate::class;
+            }
+
+            protected function suppressDeepCloneValidation(): bool
+            {
+                return true;
+            }
+        };
+        $result = clone $collection;
+        $this->assertEquals($result, $collection);
     }
 
     /**
@@ -136,9 +162,9 @@ final class ObjectCollectionTest extends CollectionTestCase
     protected function getFirstThreeValidValues(): array
     {
         return [
-            '_0' => $this->getFirstValidValue(),
-            '_1' => $this->getSecondValidValue(),
-            '_2' => $this->getThirdValidValue(),
+            $this->getFirstValidValue(),
+            $this->getSecondValidValue(),
+            $this->getThirdValidValue(),
         ];
     }
 
@@ -148,26 +174,10 @@ final class ObjectCollectionTest extends CollectionTestCase
     protected function getLastThreeValidValues(): array
     {
         return [
-            '_3' => $this->getForthValidValue(),
-            '_4' => $this->getFifthValidValue(),
-            '_5' => $this->getSixthValidValue(),
+            $this->getForthValidValue(),
+            $this->getFifthValidValue(),
+            $this->getSixthValidValue(),
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function prepareExpectedResult($expectedResult)
-    {
-        if (\is_array($expectedResult)) {
-            $result = [];
-            foreach ($expectedResult as $index => $element) {
-                $result[\is_string($index) ? $index : '_' . $index] = $element;
-            }
-            return $result;
-        }
-
-        return \is_string($expectedResult) ? $expectedResult : '_' . $expectedResult;
     }
 
     protected function createExpectedInvalidArgumentExceptionMessage($value): string
