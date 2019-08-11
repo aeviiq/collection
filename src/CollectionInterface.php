@@ -38,7 +38,7 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     /**
      * @param \Closure $closure
      *
-     * @return \Aeviiq\Collection\CollectionInterface
+     * @return CollectionInterface
      */
     public function filter(\Closure $closure): CollectionInterface;
 

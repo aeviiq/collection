@@ -77,6 +77,8 @@ abstract class AbstractCollection implements CollectionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return CollectionInterface|static
      */
     public function filter(\Closure $closure): CollectionInterface
     {
