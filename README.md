@@ -33,9 +33,9 @@ final class FooCollection extends AbstractObjectCollection
     }
     
     protected function allowedInstance(): string
-        {
-            return Foo::class;
-        }
+    {
+        return Foo::class;
+    }
 }
 ```
 
