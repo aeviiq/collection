@@ -11,7 +11,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function remove($element): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
@@ -19,7 +19,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function merge($input): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
@@ -27,7 +27,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function clear(): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
@@ -35,7 +35,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function exchangeArray(array $elements): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function append($element): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
@@ -51,18 +51,13 @@ abstract class AbstractImmutableCollection extends AbstractCollection
      */
     final public function offsetSet($offset, $element): void
     {
-        $this->throwBadMethodCallException();
+        throw BadMethodCallException::immutable();
     }
 
     /**
      * {@inheritDoc}
      */
     final public function offsetUnset($offset): void
-    {
-        $this->throwBadMethodCallException();
-    }
-
-    protected function throwBadMethodCallException(): void
     {
         throw BadMethodCallException::immutable();
     }
