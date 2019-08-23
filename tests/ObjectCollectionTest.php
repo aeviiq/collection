@@ -2,10 +2,10 @@
 
 namespace Aeviiq\Collection\Tests;
 
-use Aeviiq\Collection\AbstractObjectCollection;
-use Aeviiq\Collection\Exception\LogicException;
+use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\ObjectCollection;
 
-final class ObjectCollectionTest extends CollectionTestCase
+class ObjectCollectionTest extends BaseCollectionTest
 {
     /**
      * @var \IteratorAggregate
@@ -52,30 +52,82 @@ final class ObjectCollectionTest extends CollectionTestCase
         $this->assertSame($expected, $result);
     }
 
-    public function testExceptionIsThrownWhenClonedWithInvalidKeys(): void
+    /**
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testInstanceCreationWithInvalidObjectInstance($value): void
     {
-        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('In order to correctly clone an object collection, all keys must be strings that are valid property names as defined by PHP. If you are not deep cloning this collection, you could choose to suppress this exception by overriding AbstractObjectCollection#suppressDeepCloneValidation()');
-        $result = clone $collection;
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage(
+            $value,
+            \get_class($this->createInstanceSpecificEmptyCollectionWithElements([$value]))
+        ));
+        $this->createInstanceSpecificEmptyCollectionWithElements([$value]);
     }
 
-    public function testExceptionIsNotThrownWithInvalidKeysIfItIsSuppressed(): void
+    /**
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testAppendWithInvalidObjectInstance($value): void
     {
-        $collection = new class() extends AbstractObjectCollection
-        {
-            protected function allowedInstance(): string
-            {
-                return \IteratorAggregate::class;
-            }
+        $collection = $this->createInstanceSpecificEmptyCollection();
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
+        $collection->append($value);
+    }
 
-            protected function suppressDeepCloneValidation(): bool
-            {
-                return true;
-            }
-        };
-        $result = clone $collection;
-        $this->assertEquals($result, $collection);
+    /**
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testOffsetSetWithInvalidObjectInstance($value): void
+    {
+        $collection = $this->createInstanceSpecificEmptyCollection();
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
+        $collection->offsetSet(0, $value);
+    }
+
+    /**
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testExchangeArrayWithInvalidObjectInstance($value): void
+    {
+        $collection = $this->createInstanceSpecificEmptyCollection();
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
+        $collection->exchangeArray([$value]);
+    }
+
+    /**
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testMergeWithInvalidObjectInstance($value): void
+    {
+        $collection = $this->createInstanceSpecificEmptyCollectionWithElements($this->getFirstThreeValidValues());
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
+
+        $collection->merge([$value]);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function invalidObjectInstanceDataProvider(): array
+    {
+        return [
+            'std_class' => [new \stdClass()],
+        ];
     }
 
     /**
@@ -90,17 +142,31 @@ final class ObjectCollectionTest extends CollectionTestCase
             'bool' => [true],
             'null' => [null],
             'array' => [[]],
-            'object' => [new \stdClass()],
-            'callable' => [
-                static function () {
-                },
-            ],
         ];
+    }
+
+    /**
+     * @param mixed[] $elements
+     */
+    protected function createInstanceSpecificEmptyCollectionWithElements(array $elements): ObjectCollection
+    {
+        return new class($elements) extends ObjectCollection
+        {
+            protected function allowedInstance(): string
+            {
+                return \IteratorAggregate::class;
+            }
+        };
+    }
+
+    protected function createInstanceSpecificEmptyCollection(): ObjectCollection
+    {
+        return $this->createInstanceSpecificEmptyCollectionWithElements([]);
     }
 
     protected function getCollectionClass(): string
     {
-        return \get_class($this->createCollection());
+        return ObjectCollection::class;
     }
 
     /**
@@ -180,12 +246,12 @@ final class ObjectCollectionTest extends CollectionTestCase
         ];
     }
 
-    protected function createExpectedInvalidArgumentExceptionMessage($value): string
+    protected function createExpectedInvalidArgumentExceptionMessage($value, ?string $className = null): string
     {
         if (\is_object($value)) {
             return \sprintf(
                 '"%s" only allows elements that are an instance of "%s", "%s" given.',
-                $this->getCollectionClass(),
+                $className,
                 \IteratorAggregate::class,
                 \get_class($value)
             );
@@ -202,17 +268,6 @@ final class ObjectCollectionTest extends CollectionTestCase
         $this->forthSubject = $this->createSubject();
         $this->fifthSubject = $this->createSubject();
         $this->sixthSubject = $this->createSubject();
-    }
-
-    private function createCollection(array $items = []): AbstractObjectCollection
-    {
-        return new class($items) extends AbstractObjectCollection
-        {
-            protected function allowedInstance(): string
-            {
-                return \IteratorAggregate::class;
-            }
-        };
     }
 
     private function createSubject(): \IteratorAggregate

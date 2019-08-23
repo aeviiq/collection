@@ -2,11 +2,11 @@
 
 namespace Aeviiq\Collection\Tests;
 
-use Aeviiq\Collection\AbstractImmutableCollection;
 use Aeviiq\Collection\Exception\BadMethodCallException;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\ImmutableCollection;
 
-class ImmutableCollectionTest extends CollectionTestCase
+class ImmutableCollectionTest extends CollectionTest
 {
     public function testMap(): void
     {
@@ -67,60 +67,12 @@ class ImmutableCollectionTest extends CollectionTestCase
         $collection->append($this->getFirstValidValue());
     }
 
-    /**
-     * @dataProvider invalidDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testAppendWithInvalidValues($value): void
-    {
-        $this->expectedBadMethodCallException();
-        $collection = $this->createEmptyCollection();
-        $collection->append($value);
-    }
-
-    /**
-     * @dataProvider invalidDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testExchangeArrayWithInvalidValues($value): void
-    {
-        $this->expectedBadMethodCallException();
-        $collection = $this->createEmptyCollection();
-        $collection->exchangeArray([]);
-        parent::testExchangeArrayWithInvalidValues($value);
-    }
-
-    /**
-     * @dataProvider invalidDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testMergeWithInvalidDataTypes($value): void
-    {
-        $this->expectedBadMethodCallException();
-        $collection = $this->createEmptyCollection();
-        $collection->exchangeArray([$value]);
-    }
 
     public function testOffsetSet(): void
     {
         $this->expectedBadMethodCallException();
         $collection = $this->createEmptyCollection();
         $collection->offsetSet(0, $this->getFirstValidValue());
-    }
-
-    /**
-     * @dataProvider invalidDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testOffsetSetWithInvalidValues($value): void
-    {
-        $this->expectedBadMethodCallException();
-        $collection = $this->createEmptyCollection();
-        $collection->offsetSet(0, $value);
     }
 
     public function testIterator(): void
@@ -137,7 +89,7 @@ class ImmutableCollectionTest extends CollectionTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * @return mixed[]
      */
     public function invalidDataProvider(): array
     {
@@ -219,9 +171,9 @@ class ImmutableCollectionTest extends CollectionTestCase
         $this->expectExceptionMessage('Immutable collection should not be modified.');
     }
 
-    private function createCollection(array $items = []): AbstractImmutableCollection
+    private function createCollection(array $items = []): ImmutableCollection
     {
-        return new class($items) extends AbstractImmutableCollection
+        return new class($items) extends ImmutableCollection
         {
             /**
              * {@inheritDoc}

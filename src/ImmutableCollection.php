@@ -4,7 +4,7 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\BadMethodCallException;
 
-abstract class AbstractImmutableCollection extends AbstractCollection
+class ImmutableCollection extends Collection
 {
     /**
      * {@inheritDoc}

@@ -5,32 +5,32 @@ namespace Aeviiq\Collection;
 interface SortableInterface
 {
     /**
-     * @see https://www.php.net/manual/en/arrayobject.asort.php
+     * @see https://www.php.net/manual/en/function.asort.php
      */
     public function asort(): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.ksort.php
+     * @see https://www.php.net/manual/en/function.ksort.php
      */
     public function ksort(): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.natcasesort.php
+     * @see https://www.php.net/manual/en/function.natcasesort.php
      */
     public function natcasesort(): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.natsort.php
+     * @see https://www.php.net/manual/en/function.natsort.php
      */
     public function natsort(): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.uasort.php
+     * @see https://www.php.net/manual/en/function.uasort.php
      */
     public function uasort(callable $func): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.uksort.php
+     * @see https://www.php.net/manual/en/function.uksort.php
      */
     public function uksort(callable $func): void;
 }

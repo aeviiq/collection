@@ -2,8 +2,9 @@
 
 namespace Aeviiq\Collection\Tests;
 
-use Aeviiq\Collection\AbstractImmutableObjectCollection;
-use Aeviiq\Collection\Exception\LogicException;
+use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\ImmutableObjectCollection;
+use Aeviiq\Collection\ObjectCollection;
 
 final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
 {
@@ -52,34 +53,45 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
         $this->assertSame($expected, $result);
     }
 
-    public function testExceptionIsThrownWhenClonedWithInvalidKeys(): void
+    /**
+     * @dataProvider invalidDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testInstanceCreationWithInvalidValues($value): void
     {
-        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('In order to correctly clone an object collection, all keys must be strings that are valid property names as defined by PHP. If you are not deep cloning this collection, you could choose to suppress this exception by overriding AbstractObjectCollection#suppressDeepCloneValidation()');
-        $result = clone $collection;
-    }
-
-    public function testExceptionIsNotThrownWithInvalidKeysIfItIsSuppressed(): void
-    {
-        $collection = new class() extends AbstractImmutableObjectCollection
-        {
-            protected function allowedInstance(): string
-            {
-                return \IteratorAggregate::class;
-            }
-
-            protected function suppressDeepCloneValidation(): bool
-            {
-                return true;
-            }
-        };
-        $result = clone $collection;
-        $this->assertEquals($result, $collection);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
+        $this->createCollectionWithElements([$value]);
     }
 
     /**
-     * {@inheritDoc}
+     * @dataProvider invalidObjectInstanceDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testInstanceCreationWithInvalidObjectInstance($value): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage(
+            $value,
+            \get_class($this->createInstanceSpecificEmptyCollectionWithElements([$value]))
+        ));
+        $this->createInstanceSpecificEmptyCollectionWithElements([$value]);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function invalidObjectInstanceDataProvider(): array
+    {
+        return [
+            'std_class' => [new \stdClass()],
+        ];
+    }
+
+    /**
+     * @return mixed[]
      */
     public function invalidDataProvider(): array
     {
@@ -90,12 +102,26 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
             'bool' => [true],
             'null' => [null],
             'array' => [[]],
-            'object' => [new \stdClass()],
-            'callable' => [
-                static function () {
-                },
-            ],
         ];
+    }
+
+    /**
+     * @param mixed[] $elements
+     */
+    protected function createInstanceSpecificEmptyCollectionWithElements(array $elements): ObjectCollection
+    {
+        return new class($elements) extends ObjectCollection
+        {
+            protected function allowedInstance(): string
+            {
+                return \IteratorAggregate::class;
+            }
+        };
+    }
+
+    protected function createInstanceSpecificEmptyCollection(): ObjectCollection
+    {
+        return $this->createInstanceSpecificEmptyCollectionWithElements([]);
     }
 
     protected function getCollectionClass(): string
@@ -180,12 +206,12 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
         ];
     }
 
-    protected function createExpectedInvalidArgumentExceptionMessage($value): string
+    protected function createExpectedInvalidArgumentExceptionMessage($value, ?string $className = null): string
     {
         if (\is_object($value)) {
             return \sprintf(
                 '"%s" only allows elements that are an instance of "%s", "%s" given.',
-                $this->getCollectionClass(),
+                $className,
                 \IteratorAggregate::class,
                 \get_class($value)
             );
@@ -204,9 +230,9 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
         $this->sixthSubject = $this->createSubject();
     }
 
-    private function createCollection(array $items = []): AbstractImmutableObjectCollection
+    private function createCollection(array $items = []): ImmutableObjectCollection
     {
-        return new class($items) extends AbstractImmutableObjectCollection
+        return new class($items) extends ImmutableObjectCollection
         {
             protected function allowedInstance(): string
             {

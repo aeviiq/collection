@@ -4,7 +4,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\StringCollection;
 
-final class StringCollectionTest extends CollectionTestCase
+final class StringCollectionTest extends BaseCollectionTest
 {
     public function testMap(): void
     {

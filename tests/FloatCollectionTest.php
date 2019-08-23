@@ -4,7 +4,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\FloatCollection;
 
-final class FloatCollectionTest extends CollectionTestCase
+final class FloatCollectionTest extends BaseCollectionTest
 {
     public function testMap(): void
     {

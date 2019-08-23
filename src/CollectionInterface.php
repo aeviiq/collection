@@ -80,14 +80,6 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function getValues(): array;
 
     /**
-     * @param int      $offset
-     * @param int|null $length
-     *
-     * @return CollectionInterface
-     */
-    public function slice(int $offset, ?int $length = null): CollectionInterface;
-
-    /**
      * @return mixed The one element that was found using the closure.
      *
      * @throws LogicException When none or multiple results were found.
@@ -102,8 +94,6 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function getOneOrNullBy(\Closure $closure);
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.exchangearray.php
-     *
      * @param mixed[]
      *
      * @throws InvalidArgumentException When the given values are not of the expected type.
@@ -111,9 +101,14 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function exchangeArray(array $values): void;
 
     /**
-     * @see https://www.php.net/manual/en/arrayobject.append.php
-     *
      * @param mixed $value
      */
     public function append($element): void;
+
+    /**
+     * @param string $iteratorClass
+     *
+     * @throws InvalidArgumentException When the given iterator class does not implement ArrayAccess.
+     */
+    public function setIteratorClass(string $iteratorClass): void;
 }
