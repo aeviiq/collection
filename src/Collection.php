@@ -5,12 +5,17 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
 
-abstract class AbstractCollection implements CollectionInterface
+class Collection implements CollectionInterface
 {
     /**
-     * @var \ArrayObject
+     * @var mixed[]
      */
-    private $storage;
+    private $elements;
+
+    /**
+     * @var string
+     */
+    private $iteratorClass;
 
     /**
      * @param mixed[] $elements
@@ -19,7 +24,8 @@ abstract class AbstractCollection implements CollectionInterface
     public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
         $this->validateElements($elements);
-        $this->storage = $this->createStorage($elements, $iteratorClass);
+        $this->elements = $elements;
+        $this->setIteratorClass($iteratorClass);
     }
 
     /**
@@ -27,9 +33,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function first()
     {
-        $elements = $this->storage->getArrayCopy();
-
-        return \array_shift($elements);
+        return \array_shift($this->elements);
     }
 
     /**
@@ -37,8 +41,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function last()
     {
-        $elements = $this->toArray();
-        $last = \end($elements);
+        $last = \end($this->elements);
         if (false === $last) {
             return null;
         }
@@ -51,7 +54,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function remove($element): void
     {
-        $key = \array_search($element, $this->toArray(), true);
+        $key = \array_search($element, $this->elements, true);
         if (false === $key) {
             return;
         }
@@ -64,7 +67,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function toArray(): array
     {
-        return $this->storage->getArrayCopy();
+        return $this->elements;
     }
 
     /**
@@ -72,7 +75,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function map(\Closure $closure): array
     {
-        return \array_map($closure, $this->toArray());
+        return \array_map($closure, $this->elements);
     }
 
     /**
@@ -82,7 +85,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function filter(\Closure $closure): CollectionInterface
     {
-        return $this->createFrom(\array_filter($this->toArray(), $closure, ARRAY_FILTER_USE_BOTH));
+        return $this->createFrom(\array_filter($this->elements, $closure, ARRAY_FILTER_USE_BOTH));
     }
 
     /**
@@ -95,7 +98,7 @@ abstract class AbstractCollection implements CollectionInterface
             throw new InvalidArgumentException(\sprintf('"%s" can only merge with an array or instance of itself.', static::class));
         }
 
-        $this->exchangeArray(\array_merge($this->toArray(), $elements));
+        $this->exchangeArray(\array_merge($this->elements, $elements));
     }
 
     /**
@@ -111,7 +114,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function contains($element): bool
     {
-        return \in_array($element, $this->toArray(), true);
+        return \in_array($element, $this->elements, true);
     }
 
     /**
@@ -119,7 +122,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function clear(): void
     {
-        $this->storage->exchangeArray([]);
+        $this->elements = [];
     }
 
     /**
@@ -127,7 +130,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function getKeys(): array
     {
-        return \array_keys($this->toArray());
+        return \array_keys($this->elements);
     }
 
     /**
@@ -135,15 +138,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function getValues(): array
     {
-        return \array_values($this->toArray());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function slice(int $offset, ?int $length = null): CollectionInterface
-    {
-        return $this->createFrom(\array_slice($this->toArray(), $offset, $length, true));
+        return \array_values($this->elements);
     }
 
     /**
@@ -179,7 +174,7 @@ abstract class AbstractCollection implements CollectionInterface
     public function exchangeArray(array $elements): void
     {
         $this->validateElements($elements);
-        $this->storage->exchangeArray($elements);
+        $this->elements = $elements;
     }
 
     /**
@@ -187,9 +182,21 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function getIterator()
     {
-        $iteratorClass = $this->storage->getIteratorClass();
+        $iteratorClass = $this->iteratorClass;
 
-        return new $iteratorClass($this->toArray());
+        return new $iteratorClass($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setIteratorClass(string $iteratorClass): void
+    {
+        if (!\is_a($iteratorClass, \ArrayAccess::class, true)) {
+            throw new InvalidArgumentException(\sprintf('Iterator class must implement "%s".', \ArrayAccess::class));
+        }
+
+        $this->iteratorClass = $iteratorClass;
     }
 
     /**
@@ -198,7 +205,7 @@ abstract class AbstractCollection implements CollectionInterface
     public function append($element): void
     {
         $this->validateElement($element);
-        $this->storage->append($element);
+        $this->elements[] = $element;
     }
 
     /**
@@ -206,7 +213,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function offsetExists($offset): bool
     {
-        return $this->storage->offsetExists($offset);
+        return isset($this->elements[$offset]) || array_key_exists($offset, $this->elements);
     }
 
     /**
@@ -214,7 +221,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function offsetGet($offset)
     {
-        $this->storage->offsetGet($offset);
+        return $this->elements[$offset] ?? null;
     }
 
     /**
@@ -223,7 +230,7 @@ abstract class AbstractCollection implements CollectionInterface
     public function offsetSet($offset, $element): void
     {
         $this->validateElement($element);
-        $this->storage->offsetSet($offset, $element);
+        $this->elements[$offset] = $element;
     }
 
     /**
@@ -231,7 +238,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function offsetUnset($offset): void
     {
-        $this->storage->offsetUnset($offset);
+        unset($this->elements[$offset]);
     }
 
     /**
@@ -239,7 +246,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function count(): int
     {
-        return $this->storage->count();
+        return \count($this->elements);
     }
 
     /**
@@ -247,7 +254,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function asort(): void
     {
-        $this->storage->asort();
+        \asort($this->elements);
     }
 
     /**
@@ -255,7 +262,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function ksort(): void
     {
-        $this->storage->ksort();
+        \ksort($this->elements);
     }
 
     /**
@@ -263,7 +270,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function natcasesort(): void
     {
-        $this->storage->natcasesort();
+        \natcasesort($this->elements);
     }
 
     /**
@@ -271,7 +278,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function natsort(): void
     {
-        $this->storage->natsort();
+        \natsort($this->elements);
     }
 
     /**
@@ -279,7 +286,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function uasort(callable $func): void
     {
-        $this->storage->uasort($func);
+        \uasort($this->elements, $func);
     }
 
     /**
@@ -287,7 +294,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function uksort(callable $func): void
     {
-        $this->storage->uksort($func);
+        \uksort($this->elements, $func);
     }
 
     /**
@@ -295,20 +302,8 @@ abstract class AbstractCollection implements CollectionInterface
      *
      * @throws InvalidArgumentException When the given element is not of the expected type.
      */
-    abstract protected function validateElement($element): void;
-
-    /**
-     * @param mixed[] $elements
-     * @param string  $iteratorClass
-     */
-    protected function createStorage(array $elements, string $iteratorClass): \ArrayObject
+    protected function validateElement($element): void
     {
-        return new \ArrayObject($elements, 0, $iteratorClass);
-    }
-
-    protected function getStorage(): \ArrayObject
-    {
-        return $this->storage;
     }
 
     /**
@@ -316,7 +311,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     protected function createFrom(array $elements): self
     {
-        return new static($elements, $this->storage->getIteratorClass());
+        return new static($elements, $this->iteratorClass);
     }
 
     /**
