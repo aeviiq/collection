@@ -33,7 +33,8 @@ class Collection implements CollectionInterface
      */
     public function first()
     {
-        return \array_shift($this->elements);
+        $elements = $this->toArray();
+        return \array_shift($elements);
     }
 
     /**
@@ -41,7 +42,8 @@ class Collection implements CollectionInterface
      */
     public function last()
     {
-        $last = \end($this->elements);
+        $elements = $this->toArray();
+        $last = \end($elements);
         if (false === $last) {
             return null;
         }
