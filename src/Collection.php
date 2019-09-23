@@ -251,6 +251,11 @@ class Collection implements CollectionInterface
         return \count($this->elements);
     }
 
+    public function copy(): CollectionInterface
+    {
+        return $this->createFrom($this->toArray());
+    }
+
     /**
      * {@inheritDoc}
      */

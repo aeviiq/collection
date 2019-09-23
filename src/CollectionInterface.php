@@ -37,8 +37,6 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
 
     /**
      * @param \Closure $closure
-     *
-     * @return CollectionInterface
      */
     public function filter(\Closure $closure): CollectionInterface;
 
@@ -111,4 +109,6 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
      * @throws InvalidArgumentException When the given iterator class does not implement ArrayAccess.
      */
     public function setIteratorClass(string $iteratorClass): void;
+
+    public function copy(): CollectionInterface;
 }
