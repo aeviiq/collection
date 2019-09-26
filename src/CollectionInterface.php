@@ -110,5 +110,8 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
      */
     public function setIteratorClass(string $iteratorClass): void;
 
+    /**
+     * @return CollectionInterface
+     */
     public function copy(): CollectionInterface;
 }
