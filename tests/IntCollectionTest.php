@@ -2,17 +2,17 @@
 
 namespace Aeviiq\Collection\Tests;
 
-use Aeviiq\Collection\StringCollection;
+use Aeviiq\Collection\IntCollection;
 
-final class StringCollectionTest extends BaseCollectionTest
+final class IntCollectionTest extends BaseCollectionTest
 {
     public function testMap(): void
     {
-        $collection = $this->createCollectionWithElements(['foo', 'bar', 'baz']);
+        $collection = $this->createCollectionWithElements([1, 2, 3]);
         $result = $collection->map(static function ($value) {
-            return $value . '123';
+            return (string)$value;
         });
-        $expected = ['foo123', 'bar123', 'baz123'];
+        $expected = ['1', '2', '3'];
         $this->assertSame($expected, $result);
     }
 
@@ -22,7 +22,7 @@ final class StringCollectionTest extends BaseCollectionTest
     public function invalidDataProvider(): array
     {
         return [
-            'int' => [1],
+            'string' => ['some random string'],
             'float' => [0.1],
             'bool' => [true],
             'null' => [null],
@@ -37,7 +37,7 @@ final class StringCollectionTest extends BaseCollectionTest
 
     protected function getCollectionClass(): string
     {
-        return StringCollection::class;
+        return IntCollection::class;
     }
 
     /**
@@ -45,7 +45,7 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getFirstValidValue()
     {
-        return 'the first value';
+        return 1;
     }
 
     /**
@@ -53,7 +53,7 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getSecondValidValue()
     {
-        return 'the second value';
+        return 2;
     }
 
     /**
@@ -61,7 +61,7 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getThirdValidValue()
     {
-        return 'the third value';
+        return 3;
     }
 
     /**
@@ -69,7 +69,7 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getForthValidValue()
     {
-        return 'the forth value';
+        return 4;
     }
 
     /**
@@ -77,7 +77,7 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getFifthValidValue()
     {
-        return 'the fifth value';
+        return 5;
     }
 
     /**
@@ -85,11 +85,11 @@ final class StringCollectionTest extends BaseCollectionTest
      */
     protected function getSixthValidValue()
     {
-        return 'the sixth value';
+        return 6;
     }
 
     protected function getExpectedDataType(): string
     {
-        return 'string';
+        return 'integer';
     }
 }

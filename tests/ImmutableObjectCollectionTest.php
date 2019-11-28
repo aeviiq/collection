@@ -3,9 +3,10 @@
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
+use Aeviiq\Collection\ImmutableObjectCollection;
 use Aeviiq\Collection\ObjectCollection;
 
-class ObjectCollectionTest extends BaseCollectionTest
+final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
 {
     /**
      * @var \IteratorAggregate
@@ -53,6 +54,18 @@ class ObjectCollectionTest extends BaseCollectionTest
     }
 
     /**
+     * @dataProvider invalidDataProvider
+     *
+     * @param mixed $value
+     */
+    public function testInstanceCreationWithInvalidValues($value): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value));
+        $this->createCollectionWithElements([$value]);
+    }
+
+    /**
      * @dataProvider invalidObjectInstanceDataProvider
      *
      * @param mixed $value
@@ -68,59 +81,6 @@ class ObjectCollectionTest extends BaseCollectionTest
     }
 
     /**
-     * @dataProvider invalidObjectInstanceDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testAppendWithInvalidObjectInstance($value): void
-    {
-        $collection = $this->createInstanceSpecificEmptyCollection();
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
-        $collection->append($value);
-    }
-
-    /**
-     * @dataProvider invalidObjectInstanceDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testOffsetSetWithInvalidObjectInstance($value): void
-    {
-        $collection = $this->createInstanceSpecificEmptyCollection();
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
-        $collection->offsetSet(0, $value);
-    }
-
-    /**
-     * @dataProvider invalidObjectInstanceDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testExchangeArrayWithInvalidObjectInstance($value): void
-    {
-        $collection = $this->createInstanceSpecificEmptyCollection();
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
-        $collection->exchangeArray([$value]);
-    }
-
-    /**
-     * @dataProvider invalidObjectInstanceDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testMergeWithInvalidObjectInstance($value): void
-    {
-        $collection = $this->createInstanceSpecificEmptyCollectionWithElements($this->getFirstThreeValidValues());
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($this->createExpectedInvalidArgumentExceptionMessage($value, \get_class($collection)));
-
-        $collection->merge([$value]);
-    }
-
-    /**
      * @return mixed[]
      */
     public function invalidObjectInstanceDataProvider(): array
@@ -131,7 +91,7 @@ class ObjectCollectionTest extends BaseCollectionTest
     }
 
     /**
-     * {@inheritDoc}
+     * @return mixed[]
      */
     public function invalidDataProvider(): array
     {
@@ -166,7 +126,7 @@ class ObjectCollectionTest extends BaseCollectionTest
 
     protected function getCollectionClass(): string
     {
-        return ObjectCollection::class;
+        return \get_class($this->createCollection());
     }
 
     /**
@@ -268,6 +228,17 @@ class ObjectCollectionTest extends BaseCollectionTest
         $this->forthSubject = $this->createSubject();
         $this->fifthSubject = $this->createSubject();
         $this->sixthSubject = $this->createSubject();
+    }
+
+    private function createCollection(array $items = []): ImmutableObjectCollection
+    {
+        return new class($items) extends ImmutableObjectCollection
+        {
+            protected function allowedInstance(): string
+            {
+                return \IteratorAggregate::class;
+            }
+        };
     }
 
     private function createSubject(): \IteratorAggregate

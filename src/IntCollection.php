@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Aeviiq\Collection;
 
@@ -9,15 +9,15 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
  * @method int|null first
  * @method int|null last
  */
-final class IntCollection extends AbstractCollection
+class IntCollection extends Collection
 {
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): void
+    protected function validateElement($element): void
     {
-        if (!\is_int($value)) {
-            throw InvalidArgumentException::expectedInt($this, \gettype($value));
+        if (!\is_int($element)) {
+            throw InvalidArgumentException::expectedInt($this, \gettype($element));
         }
     }
 }
