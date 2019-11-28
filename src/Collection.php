@@ -232,6 +232,13 @@ class Collection implements CollectionInterface
     public function offsetSet($offset, $element): void
     {
         $this->validateElement($element);
+
+        if (null === $offset) {
+            $this->elements[] = $element;
+
+            return;
+        }
+
         $this->elements[$offset] = $element;
     }
 
