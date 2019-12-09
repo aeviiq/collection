@@ -8,7 +8,7 @@ use Aeviiq\Collection\Exception\LogicException;
 interface CollectionInterface extends SortableInterface, \IteratorAggregate, \ArrayAccess, \Countable
 {
     /**
-     * @return mixed[]
+     * @return array<string|int, mixed>
      */
     public function toArray(): array;
 
@@ -44,7 +44,7 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
      * Merges the input with the collection. This can take an array with valid values or
      * an instance of the collection itself.
      *
-     * @param mixed[]|CollectionInterface $input
+     * @param array<string|int, mixed>|CollectionInterface $input
      *
      * @throws InvalidArgumentException When the $input is not of the expected type(s).
      */
@@ -68,12 +68,12 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function clear(): void;
 
     /**
-     * @return int[]|string[]
+     * @return array<string|int, int|string>
      */
     public function getKeys(): array;
 
     /**
-     * @return mixed[]
+     * @return array<int, mixed>
      */
     public function getValues(): array;
 
@@ -92,7 +92,7 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function getOneOrNullBy(\Closure $closure);
 
     /**
-     * @param mixed[]
+     * @param array<string|int, mixed> $values
      *
      * @throws InvalidArgumentException When the given values are not of the expected type.
      */
