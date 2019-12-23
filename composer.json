@@ -1,10 +1,12 @@
 {
     "name": "aeviiq/collection",
     "type": "library",
-    "description": "PHP Typed collections",
+    "description": "A library that provides strict typed collections in PHP.",
     "keywords": [
+        "php",
         "collection",
-        "typed collections"
+        "typed collection",
+        "aeviiq"
     ],
     "homepage": "https://github.com/aeviiq/collection",
     "license": "MIT",
