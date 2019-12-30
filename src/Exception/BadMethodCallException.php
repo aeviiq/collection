@@ -4,8 +4,8 @@ namespace Aeviiq\Collection\Exception;
 
 class BadMethodCallException extends \BadMethodCallException implements ExceptionInterface
 {
-    public static function immutable(): BadMethodCallException
+    public static function immutable(): self
     {
-        return new static('Immutable collection should not be modified.');
+        return new self('Immutable collection should not be modified.');
     }
 }
