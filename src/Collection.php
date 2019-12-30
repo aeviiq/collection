@@ -362,7 +362,7 @@ class Collection implements CollectionInterface
      * @psalm-return self<TKey, TValue>
      * @phpstan-return self<TKey, TValue>
      */
-    protected function createFrom(array $elements): CollectionInterface
+    protected function createFrom(array $elements): self
     {
         return new static($elements, $this->iteratorClass);
     }
