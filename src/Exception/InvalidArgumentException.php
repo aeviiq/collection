@@ -4,33 +4,33 @@ namespace Aeviiq\Collection\Exception;
 
 class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
 {
-    public static function expectedString(object $subject, string $givenType): InvalidArgumentException
+    public static function expectedString(object $subject, string $givenType): self
     {
-        return static::createExpectedTypeException($subject, $givenType, 'string');
+        return self::createExpectedTypeException($subject, $givenType, 'string');
     }
 
-    public static function expectedInt(object $subject, string $givenType): InvalidArgumentException
+    public static function expectedInt(object $subject, string $givenType): self
     {
-        return static::createExpectedTypeException($subject, $givenType, 'integer');
+        return self::createExpectedTypeException($subject, $givenType, 'integer');
     }
 
-    public static function expectedFloat(object $subject, string $givenType): InvalidArgumentException
+    public static function expectedFloat(object $subject, string $givenType): self
     {
-        return static::createExpectedTypeException($subject, $givenType, 'float');
+        return self::createExpectedTypeException($subject, $givenType, 'float');
     }
 
-    public static function expectedObject(object $subject, string $givenType): InvalidArgumentException
+    public static function expectedObject(object $subject, string $givenType): self
     {
-        return static::createExpectedTypeException($subject, $givenType, 'object');
+        return self::createExpectedTypeException($subject, $givenType, 'object');
     }
 
-    public static function expectedInstance(object $subject, string $expected, string $givenType): InvalidArgumentException
+    public static function expectedInstance(object $subject, string $expected, string $givenType): self
     {
-        return new static(\sprintf('"%s" only allows elements that are an instance of "%s", "%s" given.', \get_class($subject), $expected, $givenType));
+        return new self(\sprintf('"%s" only allows elements that are an instance of "%s", "%s" given.', \get_class($subject), $expected, $givenType));
     }
 
-    private static function createExpectedTypeException(object $subject, string $givenType, string $type): InvalidArgumentException
+    private static function createExpectedTypeException(object $subject, string $givenType, string $type): self
     {
-        return new static(\sprintf('"%s" only allows elements of type "%s", "%s" given.', \get_class($subject), $type, $givenType));
+        return new self(\sprintf('"%s" only allows elements of type "%s", "%s" given.', \get_class($subject), $type, $givenType));
     }
 }

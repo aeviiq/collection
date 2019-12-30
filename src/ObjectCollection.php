@@ -5,9 +5,17 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @method \ArrayIterator|array<string|int, object> getIterator
- * @method object|null first
- * @method object|null last
+ * @psalm-template TKey as array-key
+ * @psalm-template TValue of object
+ * @phpstan-template TKey
+ * @phpstan-template TValue of object
+ *
+ * @psalm-extends Collection<TKey, TValue>
+ * @phpstan-extends Collection<TKey, TValue>
+ *
+ * @method \ArrayIterator|array<string|int, object> getIterator()
+ * @method object|null first()
+ * @method object|null last()
  */
 class ObjectCollection extends Collection
 {
@@ -28,6 +36,9 @@ class ObjectCollection extends Collection
 
     /**
      * If this is kept empty, any element can be passed, as long as it is an object.
+     *
+     * @psalm-return class-string<TValue>|string
+     * @phpstan-return class-string<TValue>|string
      *
      * @return string The class name of the allowed object instance.
      */
