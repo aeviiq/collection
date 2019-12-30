@@ -4,6 +4,15 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\BadMethodCallException;
 
+/**
+ * @psalm-template TKey as array-key
+ * @psalm-template TValue
+ * @phpstan-template TKey
+ * @phpstan-template TValue
+ *
+ * @psalm-extends Collection<TKey, TValue>
+ * @phpstan-extends Collection<TKey, TValue>
+ */
 class ImmutableCollection extends Collection
 {
     /**
@@ -49,7 +58,7 @@ class ImmutableCollection extends Collection
     /**
      * {@inheritDoc}
      */
-    final public function offsetSet($offset, $element): void
+    final public function offsetSet($offset, $value): void
     {
         throw BadMethodCallException::immutable();
     }
