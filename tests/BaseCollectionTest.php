@@ -45,6 +45,19 @@ abstract class BaseCollectionTest extends CollectionTest
     }
 
     /**
+     * @param mixed $value
+     */
+    public function testOffsetSetWithNullKey(): void
+    {
+        $value = $this->getFirstValidValue();
+
+        $collection = $this->createEmptyCollection();
+        $collection[] = $value;
+
+        self::assertSame($collection->offsetGet(0), $value);
+    }
+
+    /**
      * @dataProvider invalidDataProvider
      *
      * @param mixed $value

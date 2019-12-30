@@ -8,7 +8,7 @@ use Aeviiq\Collection\Exception\LogicException;
 class Collection implements CollectionInterface
 {
     /**
-     * @var mixed[]
+     * @var array<string|int, mixed>
      */
     private $elements;
 
@@ -18,7 +18,7 @@ class Collection implements CollectionInterface
     private $iteratorClass;
 
     /**
-     * @param mixed[] $elements
+     * @param array<string|int, mixed> $elements
      * @param string  $iteratorClass
      */
     public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
@@ -232,6 +232,13 @@ class Collection implements CollectionInterface
     public function offsetSet($offset, $element): void
     {
         $this->validateElement($element);
+
+        if (null === $offset) {
+            $this->elements[] = $element;
+
+            return;
+        }
+
         $this->elements[$offset] = $element;
     }
 
@@ -249,6 +256,14 @@ class Collection implements CollectionInterface
     public function count(): int
     {
         return \count($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function copy(): CollectionInterface
+    {
+        return clone $this;
     }
 
     /**
@@ -309,7 +324,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @param mixed[] $elements
+     * @param array<string|int, mixed> $elements
      */
     protected function createFrom(array $elements): self
     {
@@ -317,7 +332,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @param mixed[] $elements
+     * @param array<string|int, mixed> $elements
      *
      * @throws InvalidArgumentException When one of the given elements is not of the expected type.
      */

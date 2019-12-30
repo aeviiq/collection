@@ -295,6 +295,15 @@ class CollectionTest extends TestCase
         $this->assertSame(3, $loopCount);
     }
 
+    public function testCopy(): void
+    {
+        $collection = $this->createCollectionWithElements($this->getFirstThreeValidValues());
+        $copy = $collection->copy();
+        $this->assertNotSame($collection, $copy);
+        $this->assertEquals($collection->toArray(), $copy->toArray());
+        $this->assertInstanceOf(\get_class($collection), $copy);
+    }
+
     protected function getCollectionClass(): string
     {
         return Collection::class;
