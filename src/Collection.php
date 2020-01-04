@@ -5,23 +5,44 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
 
+/**
+ * @psalm-template TKey as array-key
+ * @psalm-template TValue
+ * @phpstan-template TKey
+ * @phpstan-template TValue
+ *
+ * @psalm-implements CollectionInterface<TKey, TValue>
+ * @phpstan-implements CollectionInterface<TKey, TValue>
+ */
 class Collection implements CollectionInterface
 {
     /**
-     * @var mixed[]
+     * @psalm-var array<TKey, TValue>
+     * @phpstan-var array<TKey, TValue>
+     *
+     * @var array<string|int, mixed>
      */
     private $elements;
 
     /**
+     * @psalm-var class-string<\ArrayAccess>|string
+     * @phpstan-var class-string<\ArrayAccess>|string
+     *
      * @var string
      */
     private $iteratorClass;
 
     /**
-     * @param mixed[] $elements
-     * @param string  $iteratorClass
+     * @psalm-param array<TKey, TValue> $elements
+     * @phpstan-param array<TKey, TValue> $elements
+     *
+     * @psalm-param class-string<\ArrayAccess>|string $iteratorClass
+     * @phpstan-param class-string<\ArrayAccess>|string $iteratorClass
+     *
+     * @param array<string|int, mixed> $elements
+     * @param string $iteratorClass
      */
-    public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
+    final public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
         $this->validateElements($elements);
         $this->elements = $elements;
@@ -56,6 +77,10 @@ class Collection implements CollectionInterface
      */
     public function remove($element): void
     {
+        /**
+         * @psalm-var TKey $key
+         * @phpstan-var TKey $key
+         */
         $key = \array_search($element, $this->elements, true);
         if (false === $key) {
             return;
@@ -82,8 +107,6 @@ class Collection implements CollectionInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return CollectionInterface|static
      */
     public function filter(\Closure $closure): CollectionInterface
     {
@@ -132,6 +155,10 @@ class Collection implements CollectionInterface
      */
     public function getKeys(): array
     {
+        /**
+         * @psalm-var array<int, TKey>
+         * @phpstan-var array<int, TKey>
+         */
         return \array_keys($this->elements);
     }
 
@@ -229,10 +256,17 @@ class Collection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    public function offsetSet($offset, $element): void
+    public function offsetSet($offset, $value): void
     {
-        $this->validateElement($element);
-        $this->elements[$offset] = $element;
+        $this->validateElement($value);
+
+        if (null === $offset) {
+            $this->elements[] = $value;
+
+            return;
+        }
+
+        $this->elements[$offset] = $value;
     }
 
     /**
@@ -308,6 +342,9 @@ class Collection implements CollectionInterface
     }
 
     /**
+     * @psalm-param TValue $element
+     * @phpstan-param TValue $element
+     *
      * @param mixed $element
      *
      * @throws InvalidArgumentException When the given element is not of the expected type.
@@ -317,7 +354,13 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @param mixed[] $elements
+     * @psalm-param array<TKey, TValue> $elements
+     * @phpstan-param array<TKey, TValue> $elements
+     *
+     * @param array<string|int, mixed> $elements
+     *
+     * @psalm-return self<TKey, TValue>
+     * @phpstan-return self<TKey, TValue>
      */
     protected function createFrom(array $elements): self
     {
@@ -325,7 +368,10 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @param mixed[] $elements
+     * @psalm-param array<TKey, TValue> $elements
+     * @phpstan-param array<TKey, TValue> $elements
+     *
+     * @param array<string|int, mixed> $elements
      *
      * @throws InvalidArgumentException When one of the given elements is not of the expected type.
      */

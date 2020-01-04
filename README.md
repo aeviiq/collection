@@ -12,9 +12,12 @@ composer require aeviiq/collection
 ## Declaration
 ```php
 /**
- * @method \ArrayIterator|Foo[] getIterator
- * @method Foo|null first
- * @method Foo|null last
+ * @phpstan-extends ObjectCollection<Foo>
+ * @psalm-extends ObjectCollection<Foo>
+ *
+ * @method \ArrayIterator|Foo[] getIterator()
+ * @method Foo|null first()
+ * @method Foo|null last()
  */
 final class FooCollection extends ObjectCollection
 {
