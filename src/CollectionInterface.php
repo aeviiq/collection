@@ -52,8 +52,8 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function remove($element): void;
 
     /**
-     * @psalm-return array<TKey, TValue>
-     * @phpstan-return array<TKey, TValue>
+     * @psalm-return array<TKey, mixed>
+     * @phpstan-return array<TKey, mixed>
      *
      * @return array<string|int, mixed>
      */
