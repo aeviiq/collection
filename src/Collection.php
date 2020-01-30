@@ -45,6 +45,7 @@ class Collection implements CollectionInterface
     final public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
         $this->validateElements($elements);
+        $this->onConstruct();
         $this->elements = $elements;
         $this->setIteratorClass($iteratorClass);
     }
@@ -380,5 +381,13 @@ class Collection implements CollectionInterface
         foreach ($elements as $element) {
             $this->validateElement($element);
         }
+    }
+
+    /**
+     * Method could be used to apply certain extra logic when creating the collection. 
+     * Most common use case would be in the Immutable collections, to always sort the given elements into a certain order.
+     */
+    protected function onConstruct(): void
+    {
     }
 }
