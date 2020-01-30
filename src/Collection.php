@@ -45,9 +45,9 @@ class Collection implements CollectionInterface
     final public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
         $this->validateElements($elements);
-        $this->onConstruct();
         $this->elements = $elements;
         $this->setIteratorClass($iteratorClass);
+        $this->onConstruct();
     }
 
     /**
