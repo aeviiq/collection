@@ -5,7 +5,7 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @psalm-extends Collection<array-key, string>
+ * @extends Collection<array-key, string>
  * @phpstan-extends Collection<array-key, string>
  *
  * @method \ArrayIterator|array<string|int, string> getIterator()
