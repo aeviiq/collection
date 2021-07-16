@@ -135,7 +135,7 @@ interface CollectionInterface extends SortableInterface, \IteratorAggregate, \Ar
     public function append($element): void;
 
     /**
-     * @phpstan-param class-string<ArrayAccess>|string $iteratorClass
+     * @phpstan-param class-string<\ArrayAccess>|string $iteratorClass
      *
      * @throws InvalidArgumentException When the given iterator class does not implement ArrayAccess.
      */
