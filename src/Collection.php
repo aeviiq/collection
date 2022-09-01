@@ -4,6 +4,7 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
+use Traversable;
 
 /**
  * @template TKey as array-key
@@ -33,17 +34,12 @@ class Collection implements CollectionInterface
     private $iteratorClass;
 
     /**
-     * @param array<TKey, TValue> $elements
-     * @phpstan-param array<TKey, TValue> $elements
-     *
+     * @param iterable<TKey, TValue> $elements
      * @param class-string<\ArrayAccess>|string $iteratorClass
-     * @phpstan-param class-string<\ArrayAccess>|string $iteratorClass
-     *
-     * @param array<string|int, mixed> $elements
-     * @param string $iteratorClass
      */
-    final public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
+    final public function __construct(iterable $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
+        $elements = $elements instanceof Traversable ? iterator_to_array($elements) : $elements;
         $this->validateElements($elements);
         $this->elements = $elements;
         $this->setIteratorClass($iteratorClass);
