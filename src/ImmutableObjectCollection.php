@@ -5,12 +5,12 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @psalm-template TKey as array-key
- * @psalm-template TValue of object
+ * @template TKey as array-key
+ * @template TValue of object
  * @phpstan-template TKey
  * @phpstan-template TValue of object
  *
- * @psalm-extends ImmutableCollection<TKey, TValue>
+ * @extends ImmutableCollection<TKey, TValue>
  * @phpstan-extends ImmutableCollection<TKey, TValue>
  */
 class ImmutableObjectCollection extends ImmutableCollection
@@ -33,7 +33,6 @@ class ImmutableObjectCollection extends ImmutableCollection
     /**
      * If this is kept empty, any element can be passed, as long as it is an object.
      *
-     * @psalm-return class-string<TValue>|string
      * @phpstan-return class-string<TValue>|string
      *
      * @return string The class name of the allowed object instance.

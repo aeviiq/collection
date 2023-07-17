@@ -5,14 +5,14 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @extends Collection<array-key, string>
- * @phpstan-extends Collection<array-key, string>
+ * @extends         ImmutableCollection<array-key, string>
+ * @phpstan-extends ImmutableCollection<array-key, string>
  *
  * @method \ArrayIterator|array<string|int, string> getIterator()
  * @method string|null first()
  * @method string|null last()
  */
-class StringCollection extends Collection
+class ImmutableStringCollection extends ImmutableCollection
 {
     /**
      * {@inheritdoc}

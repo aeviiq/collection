@@ -4,20 +4,21 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
+use Traversable;
 
 /**
- * @psalm-template TKey as array-key
- * @psalm-template TValue
+ * @template TKey as array-key
+ * @template TValue
  * @phpstan-template TKey
  * @phpstan-template TValue
  *
- * @psalm-implements CollectionInterface<TKey, TValue>
+ * @implements CollectionInterface<TKey, TValue>
  * @phpstan-implements CollectionInterface<TKey, TValue>
  */
 class Collection implements CollectionInterface
 {
     /**
-     * @psalm-var array<TKey, TValue>
+     * @var array<TKey, TValue>
      * @phpstan-var array<TKey, TValue>
      *
      * @var array<string|int, mixed>
@@ -25,7 +26,7 @@ class Collection implements CollectionInterface
     private $elements;
 
     /**
-     * @psalm-var class-string<\ArrayAccess>|string
+     * @var class-string<\ArrayAccess>|string
      * @phpstan-var class-string<\ArrayAccess>|string
      *
      * @var string
@@ -33,20 +34,16 @@ class Collection implements CollectionInterface
     private $iteratorClass;
 
     /**
-     * @psalm-param array<TKey, TValue> $elements
-     * @phpstan-param array<TKey, TValue> $elements
-     *
-     * @psalm-param class-string<\ArrayAccess>|string $iteratorClass
-     * @phpstan-param class-string<\ArrayAccess>|string $iteratorClass
-     *
-     * @param array<string|int, mixed> $elements
-     * @param string $iteratorClass
+     * @param iterable<TKey, TValue> $elements
+     * @param class-string<\ArrayAccess>|string $iteratorClass
      */
-    final public function __construct(array $elements = [], string $iteratorClass = \ArrayIterator::class)
+    final public function __construct(iterable $elements = [], string $iteratorClass = \ArrayIterator::class)
     {
+        $elements = $elements instanceof Traversable ? iterator_to_array($elements) : $elements;
         $this->validateElements($elements);
         $this->elements = $elements;
         $this->setIteratorClass($iteratorClass);
+        $this->onConstruct();
     }
 
     /**
@@ -78,7 +75,7 @@ class Collection implements CollectionInterface
     public function remove($element): void
     {
         /**
-         * @psalm-var TKey $key
+         * @var TKey $key
          * @phpstan-var TKey $key
          */
         $key = \array_search($element, $this->elements, true);
@@ -156,7 +153,7 @@ class Collection implements CollectionInterface
     public function getKeys(): array
     {
         /**
-         * @psalm-var array<int, TKey>
+         * @var array<int, TKey>
          * @phpstan-var array<int, TKey>
          */
         return \array_keys($this->elements);
@@ -342,7 +339,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @psalm-param TValue $element
+     * @param TValue $element
      * @phpstan-param TValue $element
      *
      * @param mixed $element
@@ -354,12 +351,10 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @psalm-param array<TKey, TValue> $elements
      * @phpstan-param array<TKey, TValue> $elements
      *
      * @param array<string|int, mixed> $elements
      *
-     * @psalm-return self<TKey, TValue>
      * @phpstan-return self<TKey, TValue>
      */
     protected function createFrom(array $elements): self
@@ -368,7 +363,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @psalm-param array<TKey, TValue> $elements
+     * @param array<TKey, TValue> $elements
      * @phpstan-param array<TKey, TValue> $elements
      *
      * @param array<string|int, mixed> $elements
@@ -380,5 +375,13 @@ class Collection implements CollectionInterface
         foreach ($elements as $element) {
             $this->validateElement($element);
         }
+    }
+
+    /**
+     * Method could be used to apply certain extra logic when creating the collection. 
+     * Most common use case would be in the Immutable collections, to always sort the given elements into a certain order.
+     */
+    protected function onConstruct(): void
+    {
     }
 }

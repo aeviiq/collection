@@ -4,6 +4,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\Collection;
 use Aeviiq\Collection\Exception\LogicException;
+use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
@@ -23,6 +24,13 @@ class CollectionTest extends TestCase
         $expected = $this->getFirstThreeValidValues();
         $collection = $this->createCollectionWithElements($expected);
         $this->assertSame($expected, $collection->toArray());
+    }
+
+    public function testInstanceCreationWithIterator(): void
+    {
+        $expected = $this->getFirstThreeValidValues();
+        $collection = $this->createCollectionWithElements(new ArrayIterator($expected));
+        self::assertSame($expected, $collection->toArray());
     }
 
     public function testAppend(): void
@@ -343,7 +351,7 @@ class CollectionTest extends TestCase
     /**
      * @param mixed[] $elements
      */
-    protected function createCollectionWithElements(array $elements): Collection
+    protected function createCollectionWithElements(iterable $elements): Collection
     {
         $collectionClass = $this->getCollectionClass();
 

@@ -5,12 +5,12 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\BadMethodCallException;
 
 /**
- * @psalm-template TKey as array-key
- * @psalm-template TValue
+ * @template TKey as array-key
+ * @template TValue
  * @phpstan-template TKey
  * @phpstan-template TValue
  *
- * @psalm-extends Collection<TKey, TValue>
+ * @extends Collection<TKey, TValue>
  * @phpstan-extends Collection<TKey, TValue>
  */
 class ImmutableCollection extends Collection
