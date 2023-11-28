@@ -206,6 +206,7 @@ class Collection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $iteratorClass = $this->iteratorClass;
@@ -245,6 +246,7 @@ class Collection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->elements[$offset] ?? null;
