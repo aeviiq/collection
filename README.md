@@ -49,7 +49,7 @@ $result = $fooCollection->filterReleasedBefore(new DateTime('now'))->filterActiv
 
 // Basic type collections that are provided
 $intCollection = new IntCollection([1, 2]);
-$integerCollection->append(3);
+$intCollection->append(3);
 
 $intCollection = new IntCollection([1, '2']); // InvalidArgumentException thrown
 $intCollection->append('3');  // InvalidArgumentException thrown
