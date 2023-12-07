@@ -208,8 +208,7 @@ class Collection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         $iteratorClass = $this->iteratorClass;
 
@@ -248,8 +247,7 @@ class Collection implements CollectionInterface
     /**
      * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->elements[$offset] ?? null;
     }

@@ -6,7 +6,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
-abstract class BaseCollectionTest extends CollectionTest
+abstract class BaseCollection extends CollectionTest
 {
     /**
      * @dataProvider invalidDataProvider
@@ -89,7 +89,7 @@ abstract class BaseCollectionTest extends CollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [];
     }

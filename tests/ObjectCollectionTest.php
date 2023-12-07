@@ -7,7 +7,7 @@ namespace Aeviiq\Collection\Tests;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\ObjectCollection;
 
-class ObjectCollectionTest extends BaseCollectionTest
+class ObjectCollectionTest extends BaseCollection
 {
     /**
      * @var \IteratorAggregate
@@ -125,7 +125,7 @@ class ObjectCollectionTest extends BaseCollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidObjectInstanceDataProvider(): array
+    public static function invalidObjectInstanceDataProvider(): array
     {
         return [
             'std_class' => [new \stdClass()],
@@ -135,7 +135,7 @@ class ObjectCollectionTest extends BaseCollectionTest
     /**
      * {@inheritDoc}
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'int' => [1],

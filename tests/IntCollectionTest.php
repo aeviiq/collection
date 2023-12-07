@@ -6,7 +6,7 @@ namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\IntCollection;
 
-final class IntCollectionTest extends BaseCollectionTest
+final class IntCollectionTest extends BaseCollection
 {
     public function testMap(): void
     {
@@ -21,7 +21,7 @@ final class IntCollectionTest extends BaseCollectionTest
     /**
      * {@inheritDoc}
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'string' => ['some random string'],

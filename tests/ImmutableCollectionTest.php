@@ -93,7 +93,7 @@ class ImmutableCollectionTest extends CollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'string' => ['some random string'],
