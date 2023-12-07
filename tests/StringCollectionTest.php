@@ -1,10 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Aeviiq\Collection\Tests;
 
 use Aeviiq\Collection\StringCollection;
 
-final class StringCollectionTest extends BaseCollectionTest
+final class StringCollectionTest extends BaseCollection
 {
     public function testMap(): void
     {
@@ -19,7 +21,7 @@ final class StringCollectionTest extends BaseCollectionTest
     /**
      * {@inheritDoc}
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'int' => [1],

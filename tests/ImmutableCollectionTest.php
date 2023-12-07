@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Aeviiq\Collection\Tests;
 
@@ -91,7 +93,7 @@ class ImmutableCollectionTest extends CollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'string' => ['some random string'],

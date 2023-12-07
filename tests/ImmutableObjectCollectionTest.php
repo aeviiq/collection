@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Aeviiq\Collection\Tests;
 
@@ -83,7 +85,7 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidObjectInstanceDataProvider(): array
+    public static function invalidObjectInstanceDataProvider(): array
     {
         return [
             'std_class' => [new \stdClass()],
@@ -93,7 +95,7 @@ final class ImmutableObjectCollectionTest extends ImmutableCollectionTest
     /**
      * @return mixed[]
      */
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             'int' => [1],
