@@ -7,12 +7,10 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @extends Collection<array-key, float>
- * @phpstan-extends Collection<array-key, float>
+ * @template TKey of array-key
+ * @template TValue of float
  *
- * @method \ArrayIterator|array<string|int, float> getIterator()
- * @method float|null first()
- * @method float|null last()
+ * @extends Collection<array-key, float>
  */
 class FloatCollection extends Collection
 {

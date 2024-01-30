@@ -7,12 +7,10 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @extends         ImmutableCollection<array-key, int>
- * @phpstan-extends ImmutableCollection<array-key, int>
+ * @template TKey of array-key
+ * @template TValue of int
  *
- * @method \ArrayIterator|array<string|int, int> getIterator()
- * @method int|null first()
- * @method int|null last()
+ * @extends ImmutableCollection<array-key, int>
  */
 class ImmutableIntCollection extends ImmutableCollection
 {

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -6,32 +6,24 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Traversable;
 
 /**
- * @template TKey as array-key
+ * @template TKey of array-key
  * @template TValue
- * @phpstan-template TKey
- * @phpstan-template TValue
  *
- * @implements CollectionInterface<TKey, TValue>
- * @phpstan-implements CollectionInterface<TKey, TValue>
+ * @template-implements CollectionInterface<TKey, TValue>
  */
 class Collection implements CollectionInterface
 {
     /**
      * @var array<TKey, TValue>
-     * @phpstan-var array<TKey, TValue>
-     *
-     * @var array<string|int, mixed>
      */
     private $elements;
 
     /**
      * @var class-string<\ArrayAccess>|string
-     * @phpstan-var class-string<\ArrayAccess>|string
-     *
-     * @var string
      */
     private $iteratorClass;
 
@@ -342,9 +334,6 @@ class Collection implements CollectionInterface
 
     /**
      * @param TValue $element
-     * @phpstan-param TValue $element
-     *
-     * @param mixed $element
      *
      * @throws InvalidArgumentException When the given element is not of the expected type.
      */
@@ -353,22 +342,17 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @phpstan-param array<TKey, TValue> $elements
+     * @param array<TKey, TValue> $elements
      *
-     * @param array<string|int, mixed> $elements
-     *
-     * @phpstan-return self<TKey, TValue>
+     * @return static
      */
-    protected function createFrom(array $elements): self
+    protected function createFrom(array $elements): static
     {
         return new static($elements, $this->iteratorClass);
     }
 
     /**
      * @param array<TKey, TValue> $elements
-     * @phpstan-param array<TKey, TValue> $elements
-     *
-     * @param array<string|int, mixed> $elements
      *
      * @throws InvalidArgumentException When one of the given elements is not of the expected type.
      */
@@ -380,7 +364,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * Method could be used to apply certain extra logic when creating the collection. 
+     * Method could be used to apply certain extra logic when creating the collection.
      * Most common use case would be in the Immutable collections, to always sort the given elements into a certain order.
      */
     protected function onConstruct(): void
