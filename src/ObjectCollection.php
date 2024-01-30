@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -7,17 +7,10 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @template TKey as array-key
+ * @template TKey of array-key
  * @template TValue of object
- * @phpstan-template TKey
- * @phpstan-template TValue of object
  *
  * @extends Collection<TKey, TValue>
- * @phpstan-extends Collection<TKey, TValue>
- *
- * @method \ArrayIterator|array<string|int, object> getIterator()
- * @method object|null first()
- * @method object|null last()
  */
 class ObjectCollection extends Collection
 {
