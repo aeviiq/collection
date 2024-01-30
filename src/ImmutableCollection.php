@@ -9,11 +9,8 @@ use Aeviiq\Collection\Exception\BadMethodCallException;
 /**
  * @template TKey as array-key
  * @template TValue
- * @phpstan-template TKey
- * @phpstan-template TValue
  *
  * @extends Collection<TKey, TValue>
- * @phpstan-extends Collection<TKey, TValue>
  */
 class ImmutableCollection extends Collection
 {

@@ -7,12 +7,10 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @extends Collection<array-key, string>
- * @phpstan-extends Collection<array-key, string>
+ * @template TKey of array-key
+ * @template TValue of string
  *
- * @method \ArrayIterator|array<string|int, string> getIterator()
- * @method string|null first()
- * @method string|null last()
+ * @extends Collection<array-key, string>
  */
 class StringCollection extends Collection
 {

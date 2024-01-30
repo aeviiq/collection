@@ -9,11 +9,8 @@ use Aeviiq\Collection\Exception\InvalidArgumentException;
 /**
  * @template TKey as array-key
  * @template TValue of object
- * @phpstan-template TKey
- * @phpstan-template TValue of object
  *
  * @extends ImmutableCollection<TKey, TValue>
- * @phpstan-extends ImmutableCollection<TKey, TValue>
  */
 class ImmutableObjectCollection extends ImmutableCollection
 {
