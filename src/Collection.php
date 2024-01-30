@@ -334,9 +334,6 @@ class Collection implements CollectionInterface
 
     /**
      * @param TValue $element
-     * @phpstan-param TValue $element
-     *
-     * @param mixed $element
      *
      * @throws InvalidArgumentException When the given element is not of the expected type.
      */
@@ -345,22 +342,17 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * @phpstan-param array<TKey, TValue> $elements
+     * @param array<TKey, TValue> $elements
      *
-     * @param array<string|int, mixed> $elements
-     *
-     * @phpstan-return self<TKey, TValue>
+     * @return static
      */
-    protected function createFrom(array $elements): self
+    protected function createFrom(array $elements): static
     {
         return new static($elements, $this->iteratorClass);
     }
 
     /**
      * @param array<TKey, TValue> $elements
-     * @phpstan-param array<TKey, TValue> $elements
-     *
-     * @param array<string|int, mixed> $elements
      *
      * @throws InvalidArgumentException When one of the given elements is not of the expected type.
      */
