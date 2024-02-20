@@ -7,9 +7,6 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @template TKey of array-key
- * @template TValue of float
- *
  * @extends Collection<array-key, float>
  */
 class FloatCollection extends Collection

@@ -6,7 +6,6 @@ namespace Aeviiq\Collection;
 
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 use Aeviiq\Collection\Exception\LogicException;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Traversable;
 
 /**
