@@ -7,9 +7,6 @@ namespace Aeviiq\Collection;
 use Aeviiq\Collection\Exception\InvalidArgumentException;
 
 /**
- * @template TKey of array-key
- * @template TValue of int
- *
  * @extends Collection<array-key, int>
  */
 class IntCollection extends Collection
